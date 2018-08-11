@@ -1,0 +1,21 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-auth
+  labels:
+    app: {{ .Release.Name }}-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-auth
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-auth
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-auth 
+        image: uhkevin/noob-auth
+        ports:
+        - containerPort: 8080
