@@ -17,6 +17,17 @@ spec:
       containers:
       - name: {{ .Release.Name }}-auth 
         image: uhkevin/noob-auth
+        env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: noob-redis
+                key: redis-password
+          - name: MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: noob-mongodb
+                key: mongodb-root-password
         ports:
         - containerPort: 8080
 ---

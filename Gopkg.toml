@@ -28,3 +28,19 @@
 [prune]
   go-tests = true
   unused-packages = true
+
+[[override]]
+  branch = "master"
+  name = "github.com/boj/redistore"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/gin-contrib/sessions"
+
+[[constraint]]
+  name = "github.com/gin-gonic/gin"
+  version = "1.2.0"
+
+[[constraint]]
+  name = "github.com/mongodb/mongo-go-driver"
+  version = "0.0.11"
