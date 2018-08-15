@@ -1,15 +1,13 @@
 package main
 
 import (
-	"context"
 	"log"
-	"net/url"
 	"os"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
-	"github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/globalsign/mgo"
 )
 
 func main() {
@@ -17,6 +15,8 @@ func main() {
 
 	// Create gin router
 	r := gin.Default()
+
+	log.Println("Connecting to Redis...")
 
 	// Use redis sessions middleware
 	store, err := redis.NewStore(
@@ -31,30 +31,33 @@ func main() {
 	}
 	r.Use(sessions.Sessions("noob", store))
 
+	log.Println("Connected to Redis.")
+
 	// Connect to mongodb
-	u := url.URL{}
-	u.Scheme = "mongodb"
-	u.User = url.UserPassword(
-		"root",
-		os.Getenv("MONGODB_PASSWORD"),
-	)
-	u.Host = "noob-mongodb:27071"
+	db := &mgo.DialInfo{
+		Addrs:    []string{"noob-mongodb:27017"},
+		Database: "admin",
+		Username: "root",
+		Password: os.Getenv("MONGODB_PASSWORD"),
+	}
 
-	client, err := mongo.Connect(context.TODO(), u.String())
+	log.Println("Connecting to MongoDB...")
+
+	session, err := mgo.DialWithInfo(db)
 	if err != nil {
 		panic(err)
 	}
 
-	// Test mongodb
-	dbs, err := client.ListDatabaseNames(context.TODO(), nil)
+	log.Println("Connected to MongoDB.")
+	log.Println("Inserting into MongoDB...")
+
+	users := session.DB("noob").C("users")
+	err = users.Insert(map[string]string{"hello": "world"})
 	if err != nil {
 		panic(err)
 	}
 
-	log.Println("DBS: ")
-	for _, db := range dbs {
-		log.Println(db)
-	}
+	log.Println("Finished DB connections.")
 
 	// Serve gin router
 	r.Run()
