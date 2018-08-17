@@ -38,13 +38,13 @@
   name = "github.com/gin-contrib/sessions"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/gin-gonic/gin"
-  version = "1.2.0"
-
-[[constraint]]
-  name = "github.com/mongodb/mongo-go-driver"
-  version = "0.0.11"
 
 [[constraint]]
   branch = "master"
   name = "github.com/globalsign/mgo"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/crypto"
