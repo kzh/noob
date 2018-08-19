@@ -47,16 +47,18 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: noob-auth
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   tls:
     - hosts:
-      - kzh.app
+      - noob.kzh.app
       secretName: tls-certificate
   rules:
-  - host: kzh.app
+  - host: noob.kzh.app
     http:
       paths:
-      - path: /
+      - path: /api/auth/
         backend:
           serviceName: noob-auth
           servicePort: 8080
