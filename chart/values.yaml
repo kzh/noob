@@ -1,0 +1,7 @@
+nginx-ingress:
+    controller:
+        hostNetwork: true
+        service:
+            type: NodePort
+    rbac:
+        create: true

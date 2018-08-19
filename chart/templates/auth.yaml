@@ -42,3 +42,21 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 8080
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: noob-auth
+spec:
+  tls:
+    - hosts:
+      - kzh.app
+      secretName: tls-certificate
+  rules:
+  - host: kzh.app
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: noob-auth
+          servicePort: 8080
