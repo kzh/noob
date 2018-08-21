@@ -24,15 +24,18 @@ type Users struct {
 
 func (u *Users) handleLogin(ctx *gin.Context) {
 	session := sessions.Default(ctx)
+	defer session.Save()
+	defer ctx.Redirect(http.StatusSeeOther, "/login/")
+
 	username, ok := session.Get("username").(string)
 	if ok && username != "" {
-		ctx.JSON(http.StatusOK, gin.H{"message": "already logged in"})
+		session.AddFlash("Already logged in.")
 		return
 	}
 
 	var creds Credentials
 	if err := ctx.ShouldBindJSON(&creds); err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid username and password"})
+		session.AddFlash("Invalid username or password.")
 		return
 	}
 
@@ -40,33 +43,35 @@ func (u *Users) handleLogin(ctx *gin.Context) {
 
 	var rec bson.M
 	if err := u.c.Find(filter).One(&rec); err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid username and password"})
+		session.AddFlash("Invalid username or password.")
 		return
 	}
 
 	hash := rec["password"].(string)
 	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(creds.Password)); err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid username and password"})
+		session.AddFlash("Invalid username or password.")
 		return
 	}
 
 	session.Set("username", creds.Username)
-	session.Save()
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+	session.AddFlash("Success!")
 }
 
 func (u *Users) handleRegister(ctx *gin.Context) {
 	session := sessions.Default(ctx)
+	defer session.Save()
+	defer ctx.Redirect(http.StatusSeeOther, "/register/")
+
 	username, ok := session.Get("username").(string)
 	if ok && username != "" {
-		ctx.JSON(http.StatusOK, gin.H{"message": "already logged in"})
+		session.AddFlash("Already logged in.")
 		return
 	}
 
 	var creds Credentials
 	if err := ctx.ShouldBindJSON(&creds); err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid username and password"})
+		session.AddFlash("Invalid username or password.")
 		return
 	}
 
@@ -74,36 +79,37 @@ func (u *Users) handleRegister(ctx *gin.Context) {
 
 	var rec bson.M
 	if err := u.c.Find(filter).One(&rec); err == nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "username taken"})
+		session.AddFlash("Username taken.")
 		return
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(creds.Password), bcrypt.DefaultCost)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		session.AddFlash("Internal server error.")
 		return
 	}
 
 	rec = bson.M{"username": creds.Username, "password": string(hash)}
 	if err := u.c.Insert(rec); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		session.AddFlash("Internal server error.")
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+	session.AddFlash("Success!")
 }
 
 func handleLogout(ctx *gin.Context) {
 	session := sessions.Default(ctx)
+	defer session.Save()
+	defer ctx.Redirect(http.StatusSeeOther, "/")
+
 	if session.Get("username") == nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "not logged in"})
+		session.AddFlash("Not logged in.")
 		return
 	}
 
 	session.Clear()
-	session.Save()
-
-	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+	session.AddFlash("Success!")
 }
 
 func main() {

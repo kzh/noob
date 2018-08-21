@@ -58,7 +58,7 @@ spec:
   - host: noob.kzh.app
     http:
       paths:
-      - path: /api/auth/
+      - path: /auth/
         backend:
           serviceName: noob-auth
           servicePort: 8080
