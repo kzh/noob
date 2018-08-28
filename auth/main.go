@@ -13,9 +13,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Credentials struct {
-	Username string `form:"username" json:"username" binding: "required"`
-	Password string `form:"password" json:"password" binding: "required"`
+type Credential struct {
+	Username string `form:"username" binding: "required"`
+	Password string `form:"password" binding: "required"`
 }
 
 type Users struct {
@@ -23,19 +23,25 @@ type Users struct {
 }
 
 func (u *Users) handleLogin(ctx *gin.Context) {
+	var redirect string
 	session := sessions.Default(ctx)
-	defer session.Save()
-	defer ctx.Redirect(http.StatusSeeOther, "/login/")
+
+	defer func() {
+		session.Save()
+		ctx.Redirect(http.StatusSeeOther, redirect)
+	}()
 
 	username, ok := session.Get("username").(string)
 	if ok && username != "" {
 		session.AddFlash("Already logged in.")
+		redirect = "/"
 		return
 	}
 
-	var creds Credentials
-	if err := ctx.ShouldBindJSON(&creds); err != nil {
+	var creds Credential
+	if err := ctx.ShouldBind(&creds); err != nil {
 		session.AddFlash("Invalid username or password.")
+		redirect = "/login/"
 		return
 	}
 
@@ -44,34 +50,43 @@ func (u *Users) handleLogin(ctx *gin.Context) {
 	var rec bson.M
 	if err := u.c.Find(filter).One(&rec); err != nil {
 		session.AddFlash("Invalid username or password.")
+		redirect = "/login/"
 		return
 	}
 
 	hash := rec["password"].(string)
 	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(creds.Password)); err != nil {
 		session.AddFlash("Invalid username or password.")
+		redirect = "/login/"
 		return
 	}
 
 	session.Set("username", creds.Username)
-
 	session.AddFlash("Success!")
+
+	redirect = "/"
 }
 
 func (u *Users) handleRegister(ctx *gin.Context) {
+	var redirect string
 	session := sessions.Default(ctx)
-	defer session.Save()
-	defer ctx.Redirect(http.StatusSeeOther, "/register/")
+
+	defer func() {
+		session.Save()
+		ctx.Redirect(http.StatusSeeOther, redirect)
+	}()
 
 	username, ok := session.Get("username").(string)
 	if ok && username != "" {
 		session.AddFlash("Already logged in.")
+		redirect = "/"
 		return
 	}
 
-	var creds Credentials
-	if err := ctx.ShouldBindJSON(&creds); err != nil {
+	var creds Credential
+	if err := ctx.ShouldBind(&creds); err != nil {
 		session.AddFlash("Invalid username or password.")
+		redirect = "/register/"
 		return
 	}
 
@@ -80,22 +95,27 @@ func (u *Users) handleRegister(ctx *gin.Context) {
 	var rec bson.M
 	if err := u.c.Find(filter).One(&rec); err == nil {
 		session.AddFlash("Username taken.")
+		redirect = "/register/"
 		return
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(creds.Password), bcrypt.DefaultCost)
 	if err != nil {
 		session.AddFlash("Internal server error.")
+		redirect = "/register/"
 		return
 	}
 
 	rec = bson.M{"username": creds.Username, "password": string(hash)}
 	if err := u.c.Insert(rec); err != nil {
 		session.AddFlash("Internal server error.")
+		redirect = "/register/"
 		return
 	}
 
 	session.AddFlash("Success!")
+
+	redirect = "/"
 }
 
 func handleLogout(ctx *gin.Context) {
@@ -113,7 +133,7 @@ func handleLogout(ctx *gin.Context) {
 }
 
 func main() {
-	log.Println("Noob started.")
+	log.Println("Noob Auth started.")
 
 	// Create gin router
 	r := gin.Default()
@@ -126,7 +146,8 @@ func main() {
 		"tcp",
 		"noob-redis-master:6379",
 		os.Getenv("REDIS_PASSWORD"),
-		// []byte(os.Getenv("SESSION_SECRET")),
+		[]byte("NOOB_SESSION_SECRET"),
+		//[]byte(os.Getenv("SESSION_SECRET")),
 	)
 	if err != nil {
 		panic(err)

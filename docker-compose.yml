@@ -8,3 +8,11 @@ services:
     image: uhkevin/noob-auth
     ports:
     - "8080:8080"
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    container_name: uhkevin/noob-frontend
+    image: uhkevin/noob-frontend
+    ports:
+    - "8080:8080"

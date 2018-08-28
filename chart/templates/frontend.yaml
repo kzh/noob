@@ -1,0 +1,59 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-frontend
+  labels:
+    app: {{ .Release.Name }}-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-frontend
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-frontend
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-frontend
+        image: uhkevin/noob-frontend
+        env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: noob-redis
+                key: redis-password
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-frontend
+spec:
+  selector:
+    app: {{ .Release.Name }}-frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: noob-frontend
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+    - hosts:
+      - noob.kzh.app
+      secretName: tls-certificate
+  rules:
+  - host: noob.kzh.app
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: noob-frontend
+          servicePort: 8080

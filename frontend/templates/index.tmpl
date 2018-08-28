@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <title>Noob</title>
+    </head>
+    <body>
+{{if .Message}}
+        <p>Alert: {{.Message}}</p>
+{{end}}
+{{if .User}}
+        <p>Hello {{.User}}.</p>
+        <form method="POST" action="/auth/logout">
+            <input type="submit" value="Logout" />
+        </form>
+{{else}}
+        <a href="/login/">Login</a>
+        <br />
+        <a href="/register/">Register</a>
+{{end}}
+    </body>
+</html>

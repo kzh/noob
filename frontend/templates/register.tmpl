@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <title>Register</title>
+    </head>
+    <body>
+{{if .Message}}
+        <p>Alert: {{.Message}}</p>
+{{end}}
+        <form method="POST" action="/auth/register">
+            <input type="text" name="username" />
+            <br />    
+            <input type="text" name="password" />
+            <br />
+	    <input type="submit" value="Register" />
+	</form>
+    </body>
+</html>

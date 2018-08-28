@@ -3,5 +3,8 @@ nginx-ingress:
         hostNetwork: true
         service:
             type: NodePort
+        defaultBackendService: "noob/noob-frontend"
     rbac:
         create: true
+    defaultBackend:
+        enabled: false
