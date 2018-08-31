@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"golang.org/x/crypto/bcrypt"
+
+	noobsess "github.com/kzh/noob/lib/sessions"
 )
 
 type Credential struct {
@@ -24,15 +24,14 @@ type Users struct {
 
 func (u *Users) handleLogin(ctx *gin.Context) {
 	var redirect string
-	session := sessions.Default(ctx)
+	session := noobsess.Default(ctx)
 
 	defer func() {
 		session.Save()
 		ctx.Redirect(http.StatusSeeOther, redirect)
 	}()
 
-	username, ok := session.Get("username").(string)
-	if ok && username != "" {
+	if session.IsLoggedIn() {
 		session.AddFlash("Already logged in.")
 		redirect = "/"
 		return
@@ -61,23 +60,24 @@ func (u *Users) handleLogin(ctx *gin.Context) {
 		return
 	}
 
-	session.Set("username", creds.Username)
+	session.Login(gin.H{
+		"username": creds.Username,
+		"role":     rec["role"].(string),
+	})
 	session.AddFlash("Success!")
-
 	redirect = "/"
 }
 
 func (u *Users) handleRegister(ctx *gin.Context) {
 	var redirect string
-	session := sessions.Default(ctx)
+	session := noobsess.Default(ctx)
 
 	defer func() {
 		session.Save()
 		ctx.Redirect(http.StatusSeeOther, redirect)
 	}()
 
-	username, ok := session.Get("username").(string)
-	if ok && username != "" {
+	if session.IsLoggedIn() {
 		session.AddFlash("Already logged in.")
 		redirect = "/"
 		return
@@ -106,7 +106,11 @@ func (u *Users) handleRegister(ctx *gin.Context) {
 		return
 	}
 
-	rec = bson.M{"username": creds.Username, "password": string(hash)}
+	rec = bson.M{
+		"username": creds.Username,
+		"password": string(hash),
+		"role":     "user",
+	}
 	if err := u.c.Insert(rec); err != nil {
 		session.AddFlash("Internal server error.")
 		redirect = "/register/"
@@ -119,11 +123,14 @@ func (u *Users) handleRegister(ctx *gin.Context) {
 }
 
 func handleLogout(ctx *gin.Context) {
-	session := sessions.Default(ctx)
-	defer session.Save()
-	defer ctx.Redirect(http.StatusSeeOther, "/")
+	session := noobsess.Default(ctx)
 
-	if session.Get("username") == nil {
+	defer func() {
+		session.Save()
+		ctx.Redirect(http.StatusSeeOther, "/")
+	}()
+
+	if !session.IsLoggedIn() {
 		session.AddFlash("Not logged in.")
 		return
 	}
@@ -133,27 +140,13 @@ func handleLogout(ctx *gin.Context) {
 }
 
 func main() {
-	log.Println("Noob Auth started.")
+	log.Println("Noob: Auth MS is starting...")
 
 	// Create gin router
 	r := gin.Default()
 
 	log.Println("Connecting to Redis...")
-
-	// Use redis sessions middleware
-	store, err := redis.NewStore(
-		10,
-		"tcp",
-		"noob-redis-master:6379",
-		os.Getenv("REDIS_PASSWORD"),
-		[]byte("NOOB_SESSION_SECRET"),
-		//[]byte(os.Getenv("SESSION_SECRET")),
-	)
-	if err != nil {
-		panic(err)
-	}
-	r.Use(sessions.Sessions("noob", store))
-
+	r.Use(noobsess.Sessions())
 	log.Println("Connected to Redis.")
 
 	// Connect to mongodb

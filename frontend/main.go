@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	log.Println("Noob Frontend started.")
+	log.Println("Noob: Frontend MS is starting...")
 
 	// Create gin router
 	r := gin.Default()

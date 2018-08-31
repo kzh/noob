@@ -8,3 +8,6 @@ nginx-ingress:
         create: true
     defaultBackend:
         enabled: false
+redis:
+    cluster:
+        enabled: false
