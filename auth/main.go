@@ -3,13 +3,11 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
-	"golang.org/x/crypto/bcrypt"
 
+	noobdb "github.com/kzh/noob/lib/database"
 	noobsess "github.com/kzh/noob/lib/sessions"
 )
 
@@ -18,11 +16,7 @@ type Credential struct {
 	Password string `form:"password" binding: "required"`
 }
 
-type Users struct {
-	c *mgo.Collection
-}
-
-func (u *Users) handleLogin(ctx *gin.Context) {
+func handleLogin(ctx *gin.Context) {
 	var redirect string
 	session := noobsess.Default(ctx)
 
@@ -44,18 +38,9 @@ func (u *Users) handleLogin(ctx *gin.Context) {
 		return
 	}
 
-	filter := bson.M{"username": creds.Username}
-
-	var rec bson.M
-	if err := u.c.Find(filter).One(&rec); err != nil {
-		session.AddFlash("Invalid username or password.")
-		redirect = "/login/"
-		return
-	}
-
-	hash := rec["password"].(string)
-	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(creds.Password)); err != nil {
-		session.AddFlash("Invalid username or password.")
+	rec, err := noobdb.Authenticate(creds.Username, creds.Password)
+	if err != nil {
+		session.AddFlash(err.Error())
 		redirect = "/login/"
 		return
 	}
@@ -68,7 +53,7 @@ func (u *Users) handleLogin(ctx *gin.Context) {
 	redirect = "/"
 }
 
-func (u *Users) handleRegister(ctx *gin.Context) {
+func handleRegister(ctx *gin.Context) {
 	var redirect string
 	session := noobsess.Default(ctx)
 
@@ -90,35 +75,13 @@ func (u *Users) handleRegister(ctx *gin.Context) {
 		return
 	}
 
-	filter := bson.M{"username": creds.Username}
-
-	var rec bson.M
-	if err := u.c.Find(filter).One(&rec); err == nil {
-		session.AddFlash("Username taken.")
+	rec := bson.M{"role": "user"}
+	if err := noobdb.Register(creds.Username, creds.Password, rec); err != nil {
+		session.AddFlash(err.Error())
 		redirect = "/register/"
-		return
-	}
-
-	hash, err := bcrypt.GenerateFromPassword([]byte(creds.Password), bcrypt.DefaultCost)
-	if err != nil {
-		session.AddFlash("Internal server error.")
-		redirect = "/register/"
-		return
-	}
-
-	rec = bson.M{
-		"username": creds.Username,
-		"password": string(hash),
-		"role":     "user",
-	}
-	if err := u.c.Insert(rec); err != nil {
-		session.AddFlash("Internal server error.")
-		redirect = "/register/"
-		return
 	}
 
 	session.AddFlash("Success!")
-
 	redirect = "/"
 }
 
@@ -149,27 +112,8 @@ func main() {
 	r.Use(noobsess.Sessions())
 	log.Println("Connected to Redis.")
 
-	// Connect to mongodb
-	db := &mgo.DialInfo{
-		Addrs:    []string{"noob-mongodb:27017"},
-		Database: "admin",
-		Username: "root",
-		Password: os.Getenv("MONGODB_PASSWORD"),
-	}
-
-	log.Println("Connecting to MongoDB...")
-
-	session, err := mgo.DialWithInfo(db)
-	if err != nil {
-		panic(err)
-	}
-
-	log.Println("Connected to MongoDB.")
-
-	users := &Users{session.DB("noob").C("users")}
-	r.POST("/login", users.handleLogin)
-	r.POST("/register", users.handleRegister)
-
+	r.POST("/login", handleLogin)
+	r.POST("/register", handleRegister)
 	r.POST("/logout", handleLogout)
 
 	// Serve gin router
