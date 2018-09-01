@@ -32,9 +32,20 @@ func Default(ctx *gin.Context) NoobSession {
 	return NoobSession{sessions.Default(ctx)}
 }
 
+func (s NoobSession) SetM(data map[string]interface{}) {
+	for k, v := range data {
+		s.Set(k, v)
+	}
+}
+
 func (s NoobSession) IsLoggedIn() bool {
 	_, ok := s.Get("username").(string)
 	return ok
+}
+
+func (s NoobSession) IsAdmin() bool {
+	role, ok := s.Get("role").(string)
+	return ok && role == "admin"
 }
 
 func (s NoobSession) Username() string {
@@ -44,10 +55,4 @@ func (s NoobSession) Username() string {
 	}
 
 	return usr
-}
-
-func (s NoobSession) Login(data gin.H) {
-	for k, v := range data {
-		s.Set(k, v)
-	}
 }

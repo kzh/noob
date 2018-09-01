@@ -11,11 +11,6 @@ import (
 	noobsess "github.com/kzh/noob/lib/sessions"
 )
 
-type Credential struct {
-	Username string `form:"username" binding: "required"`
-	Password string `form:"password" binding: "required"`
-}
-
 func handleLogin(ctx *gin.Context) {
 	var redirect string
 	session := noobsess.Default(ctx)
@@ -31,24 +26,25 @@ func handleLogin(ctx *gin.Context) {
 		return
 	}
 
-	var creds Credential
-	if err := ctx.ShouldBind(&creds); err != nil {
+	var cred noobdb.Credential
+	if err := ctx.ShouldBind(&cred); err != nil {
 		session.AddFlash("Invalid username or password.")
 		redirect = "/login/"
 		return
 	}
 
-	rec, err := noobdb.Authenticate(creds.Username, creds.Password)
+	rec, err := noobdb.Authenticate(cred)
 	if err != nil {
 		session.AddFlash(err.Error())
 		redirect = "/login/"
 		return
 	}
 
-	session.Login(gin.H{
-		"username": creds.Username,
-		"role":     rec["role"].(string),
+	session.SetM(gin.H{
+		"username": cred.Username,
+		"role":     rec["role"],
 	})
+
 	session.AddFlash("Success!")
 	redirect = "/"
 }
@@ -68,15 +64,15 @@ func handleRegister(ctx *gin.Context) {
 		return
 	}
 
-	var creds Credential
-	if err := ctx.ShouldBind(&creds); err != nil {
+	var cred noobdb.Credential
+	if err := ctx.ShouldBind(&cred); err != nil {
 		session.AddFlash("Invalid username or password.")
 		redirect = "/register/"
 		return
 	}
 
 	rec := bson.M{"role": "user"}
-	if err := noobdb.Register(creds.Username, creds.Password, rec); err != nil {
+	if err := noobdb.Register(cred, rec); err != nil {
 		session.AddFlash(err.Error())
 		redirect = "/register/"
 	}
