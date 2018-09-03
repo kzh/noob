@@ -3,8 +3,10 @@ package db
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 )
 
 var db *mgo.Database
@@ -27,4 +29,24 @@ func init() {
 
 	db = session.DB("noob")
 	log.Println("Connected to MongoDB.")
+}
+
+func count(name string) (string, error) {
+	counters := db.C("counters")
+
+	query := bson.M{"_id": name}
+	update := mgo.Change{
+		Update:    bson.M{"$inc": bson.M{"count": 1}},
+		Upsert:    true,
+		ReturnNew: true,
+	}
+
+	var doc bson.M
+	_, err := counters.Find(query).Apply(update, &doc)
+	if err != nil {
+		return "", err
+	}
+
+	id := strconv.Itoa(doc["count"].(int))
+	return id, nil
 }

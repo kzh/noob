@@ -1,17 +1,10 @@
 package db
 
 import (
-	"errors"
 	"log"
 
 	"github.com/globalsign/mgo/bson"
 	"golang.org/x/crypto/bcrypt"
-)
-
-var (
-	ErrInvalidCredential   = errors.New("Invalid username or password.")
-	ErrUnavailableUsername = errors.New("Username taken.")
-	ErrInternalServer      = errors.New("Internal server error.")
 )
 
 type Credential struct {
