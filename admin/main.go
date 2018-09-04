@@ -19,12 +19,6 @@ func handleCreate(ctx *gin.Context) {
 		ctx.Redirect(http.StatusSeeOther, redirect)
 	}()
 
-	if !session.IsLoggedIn() {
-		redirect = "/"
-		session.AddFlash("Not logged in.")
-		return
-	}
-
 	if !session.IsAdmin() {
 		redirect = "/"
 		session.AddFlash("Insufficient permissions.")
@@ -58,12 +52,6 @@ func handleEdit(ctx *gin.Context) {
 		ctx.Redirect(http.StatusSeeOther, redirect)
 	}()
 
-	if !session.IsLoggedIn() {
-		redirect = "/"
-		session.AddFlash("Not logged in.")
-		return
-	}
-
 	if !session.IsAdmin() {
 		redirect = "/"
 		session.AddFlash("Insufficient permissions.")
@@ -96,12 +84,6 @@ func handleDelete(ctx *gin.Context) {
 		session.Save()
 		ctx.Redirect(http.StatusSeeOther, redirect)
 	}()
-
-	if !session.IsLoggedIn() {
-		redirect = "/"
-		session.AddFlash("Not logged in.")
-		return
-	}
 
 	if !session.IsAdmin() {
 		redirect = "/"
@@ -137,6 +119,7 @@ func main() {
 
 	// Use redis sessions middleware
 	r.Use(noobsess.Sessions())
+	r.Use(noobsess.LoggedIn())
 
 	log.Println("Connected to Redis.")
 
