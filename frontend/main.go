@@ -23,7 +23,7 @@ func main() {
 	log.Println("Connected to Redis.")
 
 	// Load templates
-	r.LoadHTMLGlob("templates/*")
+	r.LoadHTMLGlob("templates/*.tmpl")
 
 	// Get / Handler
 	r.GET("/", func(c *gin.Context) {
@@ -76,6 +76,21 @@ func main() {
 
 		session.Save()
 		c.HTML(http.StatusOK, "register.tmpl", data)
+	})
+
+	r.GET("/create/", func(c *gin.Context) {
+		session := noobsess.Default(c)
+
+		data := struct {
+			Message string
+		}{}
+		messages := session.Flashes()
+		if len(messages) > 0 {
+			data.Message = messages[0].(string)
+		}
+
+		session.Save()
+		c.HTML(http.StatusOK, "create.tmpl", data)
 	})
 
 	r.Run()
