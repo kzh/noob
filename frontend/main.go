@@ -31,6 +31,7 @@ func main() {
 
 		data := struct {
 			User    string
+			Admin   bool
 			Message string
 		}{}
 		if session.IsLoggedIn() {
@@ -41,6 +42,7 @@ func main() {
 		if len(messages) > 0 {
 			data.Message = messages[0].(string)
 		}
+		data.Admin = session.IsAdmin()
 
 		session.Save()
 		c.HTML(http.StatusOK, "index.tmpl", data)

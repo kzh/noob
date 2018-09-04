@@ -8,12 +8,19 @@
 {{end}}
 {{if .User}}
         <p>Hello {{.User}}.</p>
+{{if .Admin}}
+        <span>Admin Privileges:</span>
+        <br>
+        <a href="/create/">Create Problem</a>
+        <br>
+        <br>
+{{end}}
         <form method="POST" action="/auth/logout">
-            <input type="submit" value="Logout" />
+            <input type="submit" value="Logout">
         </form>
 {{else}}
         <a href="/login/">Login</a>
-        <br />
+        <br>
         <a href="/register/">Register</a>
 {{end}}
     </body>
