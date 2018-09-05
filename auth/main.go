@@ -113,5 +113,7 @@ func main() {
 	r.POST("/logout", handleLogout)
 
 	// Serve gin router
-	r.Run()
+	if err := r.Run(); err != nil {
+		log.Println(err)
+	}
 }

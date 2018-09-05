@@ -110,5 +110,7 @@ func main() {
 	r.POST("/edit", handleEdit)
 	r.POST("/delete", handleDelete)
 
-	r.Run()
+	if err := r.Run(); err != nil {
+		log.Println(err)
+	}
 }

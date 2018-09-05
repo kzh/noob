@@ -98,5 +98,7 @@ func main() {
 		c.HTML(http.StatusOK, "create.tmpl", data)
 	})
 
-	r.Run()
+	if err := r.Run(); err != nil {
+		log.Println(err)
+	}
 }
