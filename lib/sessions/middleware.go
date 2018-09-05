@@ -5,16 +5,33 @@ import (
 	"net/http"
 )
 
-func LoggedIn() gin.HandlerFunc {
+type guardian func(sess NoobSession) bool
+
+func guard(g guardian, message string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := Default(c)
 		defer session.Save()
 
-		if !session.IsLoggedIn() {
-			session.AddFlash("Not logged in.")
+		if !g(session) {
+			session.AddFlash(message)
 			c.Redirect(http.StatusSeeOther, "/")
+			c.Abort()
 		} else {
 			c.Next()
 		}
 	}
+}
+
+func LoggedIn() gin.HandlerFunc {
+	return guard(
+		NoobSession.IsLoggedIn,
+		"Not logged in.",
+	)
+}
+
+func Admin() gin.HandlerFunc {
+	return guard(
+		NoobSession.IsAdmin,
+		"Insufficient permissions.",
+	)
 }

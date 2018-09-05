@@ -36,7 +36,6 @@ func main() {
 		}{}
 		if session.IsLoggedIn() {
 			data.User = session.Username()
-			log.Println("logged in")
 		}
 		messages := session.Flashes()
 		if len(messages) > 0 {
@@ -80,7 +79,11 @@ func main() {
 		c.HTML(http.StatusOK, "register.tmpl", data)
 	})
 
-	r.GET("/create/", func(c *gin.Context) {
+	admin := r.Group("/")
+	admin.Use(noobsess.LoggedIn())
+	admin.Use(noobsess.Admin())
+
+	admin.GET("/create/", func(c *gin.Context) {
 		session := noobsess.Default(c)
 
 		data := struct {

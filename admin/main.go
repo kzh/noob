@@ -19,12 +19,6 @@ func handleCreate(ctx *gin.Context) {
 		ctx.Redirect(http.StatusSeeOther, redirect)
 	}()
 
-	if !session.IsAdmin() {
-		redirect = "/"
-		session.AddFlash("Insufficient permissions.")
-		return
-	}
-
 	var prob noobdb.ProblemData
 	if err := ctx.ShouldBind(&prob); err != nil {
 		redirect = "/"
@@ -52,12 +46,6 @@ func handleEdit(ctx *gin.Context) {
 		ctx.Redirect(http.StatusSeeOther, redirect)
 	}()
 
-	if !session.IsAdmin() {
-		redirect = "/"
-		session.AddFlash("Insufficient permissions.")
-		return
-	}
-
 	var prob noobdb.Problem
 	if err := ctx.ShouldBind(&prob); err != nil {
 		redirect = "/"
@@ -84,12 +72,6 @@ func handleDelete(ctx *gin.Context) {
 		session.Save()
 		ctx.Redirect(http.StatusSeeOther, redirect)
 	}()
-
-	if !session.IsAdmin() {
-		redirect = "/"
-		session.AddFlash("Insufficient permissions.")
-		return
-	}
 
 	var prob noobdb.ProblemID
 	if err := ctx.ShouldBind(&prob); err != nil {
@@ -120,6 +102,7 @@ func main() {
 	// Use redis sessions middleware
 	r.Use(noobsess.Sessions())
 	r.Use(noobsess.LoggedIn())
+	r.Use(noobsess.Admin())
 
 	log.Println("Connected to Redis.")
 
