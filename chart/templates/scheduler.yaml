@@ -1,0 +1,64 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-scheduler
+  labels:
+    app: {{ .Release.Name }}-scheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-scheduler
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-scheduler
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-scheduler
+        image: uhkevin/noob-scheduler
+        env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: noob-redis
+                key: redis-password
+          - name: MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: noob-mongodb
+                key: mongodb-root-password
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-scheduler
+spec:
+  selector:
+    app: {{ .Release.Name }}-scheduler
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: noob-scheduler
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+    - hosts:
+      - noob.kzh.app
+      secretName: tls-certificate
+  rules:
+  - host: noob.kzh.app
+    http:
+      paths:
+      - path: /scheduler/
+        backend:
+          serviceName: noob-scheduler
+          servicePort: 8080

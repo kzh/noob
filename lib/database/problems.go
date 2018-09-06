@@ -19,8 +19,11 @@ type ProblemData struct {
 }
 
 type Problem struct {
-	ProblemID
-	ProblemData
+	ID          string `form:"id" json:"id" bson:"_id" binding:"required"`
+	Name        string `form:"name" json:"name" bson:"name" binding:"required"`
+	Description string `form:"description" json:"description" bson:"description" binding:"required"`
+	In          string `form:"inputs" json:"inputs" bson:"inputs" binding:"required"`
+	Out         string `form:"outputs" json:"outputs" bson:"outputs" binding:"required"`
 }
 
 func CreateProblem(p ProblemData) (string, error) {
@@ -86,4 +89,32 @@ func DeleteProblem(pid ProblemID) error {
 		log.Println(err)
 		return ErrInternalServer
 	}
+}
+
+func Problems() ([]Problem, error) {
+	problems := db.C("problems")
+
+	query := problems.Find(bson.M{})
+	count, err := query.Count()
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]Problem, count)
+
+	var (
+		problem Problem
+		i       int
+	)
+
+	iter := query.Iter()
+	for iter.Next(&problem) {
+		res[i] = problem
+		i++
+	}
+
+	log.Println(len(res))
+
+	err = iter.Close()
+	return res, err
 }

@@ -24,3 +24,11 @@ services:
     image: uhkevin/noob-admin
     ports:
     - "8080:8080"
+  scheduler:
+    build:
+      context: .
+      dockerfile: ./scheduler/Dockerfile
+    container_name: uhkevin/noob-scheduler
+    image: uhkevin/noob-scheduler
+    ports:
+    - "8080:8080"
