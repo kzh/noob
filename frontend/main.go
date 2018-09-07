@@ -9,6 +9,27 @@ import (
 	noobsess "github.com/kzh/noob/lib/sessions"
 )
 
+func handleHome(c *gin.Context) {
+	session := noobsess.Default(c)
+
+	data := struct {
+		User    string
+		Admin   bool
+		Message string
+	}{}
+	if session.IsLoggedIn() {
+		data.User = session.Username()
+	}
+	messages := session.Flashes()
+	if len(messages) > 0 {
+		data.Message = messages[0].(string)
+	}
+	data.Admin = session.IsAdmin()
+
+	session.Save()
+	c.HTML(http.StatusOK, "index.tmpl", data)
+}
+
 func main() {
 	log.Println("Noob: Frontend MS is starting...")
 
@@ -25,78 +46,18 @@ func main() {
 	// Load templates
 	r.LoadHTMLGlob("templates/*.tmpl")
 
-	// Get / Handler
-	r.GET("/", func(c *gin.Context) {
-		session := noobsess.Default(c)
+	r.GET("/", handleHome)
 
-		data := struct {
-			User    string
-			Admin   bool
-			Message string
-		}{}
-		if session.IsLoggedIn() {
-			data.User = session.Username()
-		}
-		messages := session.Flashes()
-		if len(messages) > 0 {
-			data.Message = messages[0].(string)
-		}
-		data.Admin = session.IsAdmin()
+	// Auth
+	auth := r.Group("/")
+	auth.GET("/login/", handleLogin)
+	auth.GET("/register/", handleRegister)
 
-		session.Save()
-		c.HTML(http.StatusOK, "index.tmpl", data)
-	})
-
-	// Get /login/ Handler
-	r.GET("/login/", func(c *gin.Context) {
-		session := noobsess.Default(c)
-
-		data := struct {
-			Message string
-		}{}
-		messages := session.Flashes()
-		if len(messages) > 0 {
-			data.Message = messages[0].(string)
-		}
-
-		session.Save()
-		c.HTML(http.StatusOK, "login.tmpl", data)
-	})
-
-	// Get /register/ Handler
-	r.GET("/register/", func(c *gin.Context) {
-		session := noobsess.Default(c)
-
-		data := struct {
-			Message string
-		}{}
-		messages := session.Flashes()
-		if len(messages) > 0 {
-			data.Message = messages[0].(string)
-		}
-
-		session.Save()
-		c.HTML(http.StatusOK, "register.tmpl", data)
-	})
-
+	// Admin
 	admin := r.Group("/")
 	admin.Use(noobsess.LoggedIn())
 	admin.Use(noobsess.Admin())
-
-	admin.GET("/create/", func(c *gin.Context) {
-		session := noobsess.Default(c)
-
-		data := struct {
-			Message string
-		}{}
-		messages := session.Flashes()
-		if len(messages) > 0 {
-			data.Message = messages[0].(string)
-		}
-
-		session.Save()
-		c.HTML(http.StatusOK, "create.tmpl", data)
-	})
+	admin.GET("/create/", handleCreate)
 
 	if err := r.Run(); err != nil {
 		log.Println(err)

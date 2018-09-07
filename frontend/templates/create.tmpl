@@ -6,10 +6,10 @@
 {{if .Message}}
         <p>Alert: {{.Message}}</p>
 {{end}}
-        <form method="POST" action="/admin/create">
+        <form method="POST" action="/api/admin/create">
             <input type="text" name="name">
             <br>
-            <textarea type="text" name="description">
+            <textarea name="description"></textarea>
             <br>
             <textarea name="inputs"></textarea>
             <br>

@@ -58,7 +58,7 @@ spec:
   - host: noob.kzh.app
     http:
       paths:
-      - path: /admin/
+      - path: /api/admin/
         backend:
           serviceName: noob-admin
           servicePort: 8080

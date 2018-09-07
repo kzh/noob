@@ -6,7 +6,7 @@
 {{if .Message}}
         <p>Alert: {{.Message}}</p>
 {{end}}
-        <form method="POST" action="/auth/register">
+        <form method="POST" action="/api/auth/register">
             <input type="text" name="username">
             <br>
             <input type="password" name="password">

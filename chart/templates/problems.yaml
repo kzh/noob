@@ -1,22 +1,22 @@
 apiVersion: apps/v1 
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-scheduler
+  name: {{ .Release.Name }}-problems
   labels:
-    app: {{ .Release.Name }}-scheduler
+    app: {{ .Release.Name }}-problems
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-scheduler
+      app: {{ .Release.Name }}-problems
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-scheduler
+        app: {{ .Release.Name }}-problems
     spec:
       containers:
-      - name: {{ .Release.Name }}-scheduler
-        image: uhkevin/noob-scheduler
+      - name: {{ .Release.Name }}-problems
+        image: uhkevin/noob-problems
         env:
           - name: REDIS_PASSWORD
             valueFrom:
@@ -34,10 +34,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-scheduler
+  name: {{ .Release.Name }}-problems
 spec:
   selector:
-    app: {{ .Release.Name }}-scheduler
+    app: {{ .Release.Name }}-problems
   ports:
   - protocol: TCP
     port: 80
@@ -58,7 +58,7 @@ spec:
   - host: noob.kzh.app
     http:
       paths:
-      - path: /scheduler/
+      - path: /api/problems/
         backend:
-          serviceName: noob-scheduler
+          serviceName: noob-problems
           servicePort: 8080
