@@ -114,7 +114,21 @@ func Problems() ([]Problem, error) {
 	}
 
 	log.Println(len(res))
-
 	err = iter.Close()
-	return res, err
+	if err != nil {
+		log.Println(err)
+	}
+
+	return res, nil
+}
+
+func ProblemFromID(id string) (Problem, error) {
+	problems := db.C("problems")
+
+	var problem Problem
+	err := problems.Find(bson.M{
+		"_id": id,
+	}).One(&problem)
+
+	return problem, err
 }

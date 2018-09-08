@@ -16,9 +16,23 @@ func handleList(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, problems)
+}
+
+func handleSelect(ctx *gin.Context) {
+	id := ctx.Param("id")
+	problem, err := noobdb.ProblemFromID(id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, problem)
 }
 
 func main() {
@@ -31,6 +45,7 @@ func main() {
 	log.Println("Connected to Redis.")
 
 	r.GET("/list", handleList)
+	r.GET("/get/:id", handleSelect)
 
 	r.Run()
 }

@@ -11,6 +11,6 @@ WORKDIR /app/
 
 COPY --from=build /go/src/github.com/kzh/noob/main ./frontend
 ADD ./frontend/templates/ ./templates/
-# ADD ./frontend/static/ ./static/
+ADD ./frontend/static/ ./static/
 
 CMD ["./frontend"]

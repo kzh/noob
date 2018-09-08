@@ -43,10 +43,14 @@ func main() {
 
 	log.Println("Connected to Redis.")
 
-	// Load templates
+	r.Static("/static", "./static/")
 	r.LoadHTMLGlob("templates/*.tmpl")
 
 	r.GET("/", handleHome)
+
+	problems := r.Group("/")
+	problems.GET("/problems/", handleProblems)
+	problems.GET("/problem/:id", handleProblem)
 
 	// Auth
 	auth := r.Group("/")

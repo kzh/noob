@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <title>Problems</title>
+        <script src="/static/js/problems.js"></script>
+    </head>
+    <body>
+{{if .Message}}
+        <p>Alert: {{.Message}}</p>
+{{end}}
+        <p>Problems:</p>
+        <div class="problems">
+        </div>
+    </body>
+</html>
