@@ -2,13 +2,14 @@
     <head>
         <title>Problems</title>
         <script src="/static/js/problems.js"></script>
+        <link rel="stylesheet" href="/static/css/common.css">
     </head>
     <body>
-{{if .Message}}
-        <p>Alert: {{.Message}}</p>
-{{end}}
-        <p>Problems:</p>
-        <div class="problems">
+        <p class="message">Loading...</p>
+        <div class="content hidden">
+            <p>Problems:</p>
+            <div class="problems">
+            </div>
         </div>
     </body>
 </html>
