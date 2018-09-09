@@ -42,22 +42,36 @@ The goal is to create a leetcode clone on Kubernetes. Noob is mainly for me to l
 - next: tbd…
 
 ### Development
-Some commands to know :P
-*Accessing MongoDB*:
-- kubectl get secret noob-mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 --decode
-- kubectl run -i -t --rm debug --image=ubuntu --restart=Never
-- apt-get update && apt-get install mongodb
-- mongo --host noob-mongodb --port 27017 -u root -p <PASSWORD> admin
-* Changing user’s role: db.users.findAndModify({    query: {username: <USERNAME>},    update: {$set: {role: <ROLE>}},    new: true, })
-*Updating Microservices*:
+Some commands to know :P .  
+**Accessing MongoDB**:
+```
+$ kubectl get secret noob-mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 --decode
+$ kubectl run -i -t --rm debug --image=ubuntu --restart=Never
+$ apt-get update && apt-get install mongodb
+$ mongo --host noob-mongodb --port 27017 -u root -p <PASSWORD> admin
+```
+   * Changing user’s role:
+```
+db.users.findAndModify({
+   query: {username: <USERNAME>},
+   update: {$set: {role: <ROLE>}},
+   new: true,
+})
+```
+
+**Updating Microservices**:
 * Entire System:
-    - docker-compose build && docker-compose push
-    - helm delete --purge noob
-    - helm install --namespace noob --name noob ./chart/
+```
+$ docker-compose build && docker-compose push
+$ helm delete --purge noob
+$ helm install --namespace noob --name noob ./chart/
+```
 * Single Microservice:
-    - docker-compose build <microservice> && docker-compose push <microservice>
-    - kubectl get pods
-    - kubectl delete pod <microservice>
+```
+$ docker-compose build <microservice> && docker-compose push <microservice>
+$ kubectl get pods
+$ kubectl delete pod <microservice>
+```
 
 #### Personal Notes
 - Helm update will mess up the redis k8s secret since the secret does not update while the redis password will. The solution to this is just do a hard delete and install when updating the entire chart.
