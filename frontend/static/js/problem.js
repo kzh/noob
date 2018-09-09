@@ -3,18 +3,42 @@ window.onload = function() {
     const split = path.split("/");
     const id = split[split.length - 1];
 
+    function handleError(res) {
+        if (res.error == undefined) {
+            return res;
+        }
+
+        throw new Error(res.error);
+    }
+
     const title = document.getElementsByTagName("title")[0]; 
-    const name = document.getElementById("name");
-    const description = document.getElementById("description");
+    const msg = document.querySelector(".message");
+    function error(err) {
+        if (err instanceof SyntaxError) {
+            err = new Error("Service unavailable.");
+        }
+
+        msg.innerText = err;
+        title.innerText = "Error";
+    }
 
     function populateData(data) {
-        title.innerText = data.name;
+        const name = document.getElementById("name");
+        const description = document.getElementById("description");
+
+        title.innerText = "Problem: " + data.name;
         name.innerText = data.name;
         description.innerText = data.description;
+
+        const content = document.querySelector(".content");
+        content.classList.remove("hidden");
+
+        msg.classList.add("hidden"); 
     }
 
     fetch("/api/problems/get/" + id)
     .then(res => res.json())
+    .then(handleError)
     .then(populateData)
-    .catch(err => console.log(err));
+    .catch(error);
 }

@@ -12,27 +12,33 @@ import (
 
 func handleList(ctx *gin.Context) {
 	problems, err := noobdb.Problems()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+	if err == nil {
+		ctx.JSON(http.StatusOK, problems)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, problems)
+	status := http.StatusInternalServerError
+	ctx.JSON(status, gin.H{
+		"error": err.Error(),
+	})
 }
 
 func handleSelect(ctx *gin.Context) {
 	id := ctx.Param("id")
-	problem, err := noobdb.ProblemFromID(id)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+	problem, err := noobdb.Prob(id)
+	if err == nil {
+		ctx.JSON(http.StatusOK, problem)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, problem)
+	status := http.StatusInternalServerError
+	if err == noobdb.ErrNoSuchProblem {
+		status = http.StatusNotFound
+	}
+
+	ctx.JSON(status, gin.H{
+		"error": err.Error(),
+	})
 }
 
 func main() {

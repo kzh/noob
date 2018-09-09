@@ -97,7 +97,8 @@ func Problems() ([]Problem, error) {
 	query := problems.Find(bson.M{})
 	count, err := query.Count()
 	if err != nil {
-		return nil, err
+		log.Println(err)
+		return nil, ErrInternalServer
 	}
 
 	res := make([]Problem, count)
@@ -113,7 +114,6 @@ func Problems() ([]Problem, error) {
 		i++
 	}
 
-	log.Println(len(res))
 	err = iter.Close()
 	if err != nil {
 		log.Println(err)
@@ -122,13 +122,20 @@ func Problems() ([]Problem, error) {
 	return res, nil
 }
 
-func ProblemFromID(id string) (Problem, error) {
+func Prob(id string) (Problem, error) {
 	problems := db.C("problems")
 
 	var problem Problem
 	err := problems.Find(bson.M{
 		"_id": id,
 	}).One(&problem)
+
+	if err == mgo.ErrNotFound {
+		err = ErrNoSuchProblem
+	} else if err != nil {
+		log.Println(err)
+		err = ErrInternalServer
+	}
 
 	return problem, err
 }
