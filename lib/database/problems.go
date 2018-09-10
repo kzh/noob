@@ -19,11 +19,17 @@ type ProblemData struct {
 }
 
 type Problem struct {
-	ID          string `form:"id" json:"id" bson:"_id" binding:"required"`
+	ID          string `form:"id" json:"id" bson:"_id"`
 	Name        string `form:"name" json:"name" bson:"name" binding:"required"`
 	Description string `form:"description" json:"description" bson:"description" binding:"required"`
 	In          string `form:"inputs" json:"inputs" bson:"inputs" binding:"required"`
 	Out         string `form:"outputs" json:"outputs" bson:"outputs" binding:"required"`
+}
+
+type ProblemSnap struct {
+	ID          string `json:"id" bson:"_id"`
+	Name        string `json:"name" bson:"name"`
+	Description string `json:"description" bson:"description"`
 }
 
 func CreateProblem(p ProblemData) (string, error) {
@@ -91,7 +97,7 @@ func DeleteProblem(pid ProblemID) error {
 	}
 }
 
-func Problems() ([]Problem, error) {
+func Problems() ([]ProblemSnap, error) {
 	problems := db.C("problems")
 
 	query := problems.Find(bson.M{})
@@ -101,10 +107,10 @@ func Problems() ([]Problem, error) {
 		return nil, ErrInternalServer
 	}
 
-	res := make([]Problem, count)
+	res := make([]ProblemSnap, count)
 
 	var (
-		problem Problem
+		problem ProblemSnap
 		i       int
 	)
 
@@ -122,10 +128,10 @@ func Problems() ([]Problem, error) {
 	return res, nil
 }
 
-func Prob(id string) (Problem, error) {
+func Prob(id string) (ProblemSnap, error) {
 	problems := db.C("problems")
 
-	var problem Problem
+	var problem ProblemSnap
 	err := problems.Find(bson.M{
 		"_id": id,
 	}).One(&problem)

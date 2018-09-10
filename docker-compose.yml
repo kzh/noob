@@ -16,14 +16,6 @@ services:
     image: uhkevin/noob-frontend
     ports:
     - "8080:8080"
-  admin:
-    build:
-      context: .
-      dockerfile: ./admin/Dockerfile
-    container_name: uhkevin/noob-admin
-    image: uhkevin/noob-admin
-    ports:
-    - "8080:8080"
   problems:
     build:
       context: .

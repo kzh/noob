@@ -53,5 +53,13 @@ func main() {
 	r.GET("/list", handleList)
 	r.GET("/get/:id", handleSelect)
 
+	admin := r.Group("/")
+	admin.Use(noobsess.LoggedIn())
+	admin.Use(noobsess.Admin())
+
+	admin.POST("/create", handleCreate)
+	admin.POST("/edit", handleEdit)
+	admin.POST("/delete", handleDelete)
+
 	r.Run()
 }

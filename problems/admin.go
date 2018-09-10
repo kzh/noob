@@ -91,26 +91,3 @@ func handleDelete(ctx *gin.Context) {
 	redirect = "/"
 
 }
-
-func main() {
-	log.Println("Noob: Admin MS is starting...")
-
-	r := gin.Default()
-
-	log.Println("Connecting to Redis...")
-
-	// Use redis sessions middleware
-	r.Use(noobsess.Sessions())
-	r.Use(noobsess.LoggedIn())
-	r.Use(noobsess.Admin())
-
-	log.Println("Connected to Redis.")
-
-	r.POST("/create", handleCreate)
-	r.POST("/edit", handleEdit)
-	r.POST("/delete", handleDelete)
-
-	if err := r.Run(); err != nil {
-		log.Println(err)
-	}
-}

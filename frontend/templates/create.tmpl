@@ -6,7 +6,7 @@
 {{if .Message}}
         <p>Alert: {{.Message}}</p>
 {{end}}
-        <form method="POST" action="/api/admin/create">
+        <form method="POST" action="/api/problems/create">
             <input type="text" name="name">
             <br>
             <textarea name="description"></textarea>
