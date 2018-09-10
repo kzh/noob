@@ -128,20 +128,31 @@ func Problems() ([]ProblemSnap, error) {
 	return res, nil
 }
 
-func Prob(id string) (ProblemSnap, error) {
+func prob(id string, format interface{}) error {
 	problems := db.C("problems")
 
-	var problem ProblemSnap
 	err := problems.Find(bson.M{
 		"_id": id,
-	}).One(&problem)
+	}).One(format)
 
 	if err == mgo.ErrNotFound {
-		err = ErrNoSuchProblem
+		return ErrNoSuchProblem
 	} else if err != nil {
 		log.Println(err)
-		err = ErrInternalServer
+		return ErrInternalServer
 	}
 
-	return problem, err
+	return err
+}
+
+func FullProblem(id string) (Problem, error) {
+	var p Problem
+	err := prob(id, &p)
+	return p, err
+}
+
+func SnapProblem(id string) (ProblemSnap, error) {
+	var p ProblemSnap
+	err := prob(id, &p)
+	return p, err
 }

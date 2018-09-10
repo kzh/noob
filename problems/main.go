@@ -25,7 +25,7 @@ func handleList(ctx *gin.Context) {
 
 func handleSelect(ctx *gin.Context) {
 	id := ctx.Param("id")
-	problem, err := noobdb.Prob(id)
+	problem, err := noobdb.SnapProblem(id)
 	if err == nil {
 		ctx.JSON(http.StatusOK, problem)
 		return
