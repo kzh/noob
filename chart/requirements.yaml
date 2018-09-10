@@ -5,6 +5,9 @@ dependencies:
     - name: mongodb
       version: 4.0.4
       repository: https://kubernetes-charts.storage.googleapis.com/
+    - name: rabbitmq
+      version: 2.2.0
+      repository: https://kubernetes-charts.storage.googleapis.com/
     - name: nginx-ingress
       version: 0.25.1
       repository: https://kubernetes-charts.storage.googleapis.com/

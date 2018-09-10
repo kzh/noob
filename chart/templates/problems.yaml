@@ -46,7 +46,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: noob-scheduler
+  name: noob-problems
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
