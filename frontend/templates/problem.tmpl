@@ -8,6 +8,14 @@
         <p class="message">Loading...</p>
         <div class="content hidden">
             <b id="name"></b>
+{{ if .Admin }}
+            <br>
+            <button id="edit">Edit</button>
+            <form style="display: inline;" id="delete" method="POST" action="/api/problems/delete">
+                <input class="hidden" type="text" name="id">
+                <input type="submit" value="Delete">
+            </form>
+{{ end }}
             <br>
             <span id="description"></span>
             <br>

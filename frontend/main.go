@@ -50,7 +50,7 @@ func main() {
 
 	problems := r.Group("/")
 	problems.GET("/problems/", handleProblems)
-	problems.GET("/problem/:id", handleProblem)
+	problems.GET("/problem/:id/", handleProblem)
 
 	// Auth
 	auth := r.Group("/")

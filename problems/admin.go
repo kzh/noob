@@ -29,12 +29,11 @@ func handleCreate(ctx *gin.Context) {
 
 	problem, err := noobdb.CreateProblem(prob)
 	if err != nil {
+		session.AddFlash(err.Error())
 		redirect = "/"
 	}
-	log.Println(problem)
 
-	session.AddFlash("Success!")
-	redirect = "/"
+	redirect = "/problem/" + problem + "/"
 }
 
 func handleEdit(ctx *gin.Context) {
@@ -89,5 +88,4 @@ func handleDelete(ctx *gin.Context) {
 
 	session.AddFlash("Success!")
 	redirect = "/"
-
 }

@@ -1,7 +1,7 @@
 window.onload = function() {
     const path = window.location.pathname;
     const split = path.split("/");
-    const id = split[split.length - 1];
+    const id = split[split.length - 2];
 
     function handleError(res) {
         if (res.error == undefined) {
@@ -41,4 +41,20 @@ window.onload = function() {
     .then(handleError)
     .then(populateData)
     .catch(error);
+
+    const editBtn = document.getElementById("edit");
+    if (editBtn) {
+        editBtn.addEventListener("click", function() {
+            window.location.href += "edit/";
+        });
+    }
+
+    const delForm = document.getElementById("delete");
+    const idEl = document.querySelector("input[name=\"id\"]");
+    if (delForm) {
+        delForm.addEventListener("submit", function() {
+            idEl.value = id;
+            return true;
+        });
+    }
 }

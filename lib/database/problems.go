@@ -128,7 +128,7 @@ func Problems() ([]ProblemSnap, error) {
 	return res, nil
 }
 
-func prob(id string, format interface{}) error {
+func problem(id string, format interface{}) error {
 	problems := db.C("problems")
 
 	err := problems.Find(bson.M{
@@ -147,12 +147,12 @@ func prob(id string, format interface{}) error {
 
 func FullProblem(id string) (Problem, error) {
 	var p Problem
-	err := prob(id, &p)
+	err := problem(id, &p)
 	return p, err
 }
 
 func SnapProblem(id string) (ProblemSnap, error) {
 	var p ProblemSnap
-	err := prob(id, &p)
+	err := problem(id, &p)
 	return p, err
 }

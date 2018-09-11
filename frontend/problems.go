@@ -23,34 +23,21 @@ func handleCreate(c *gin.Context) {
 	c.HTML(http.StatusOK, "create.tmpl", data)
 }
 
+func handleEdit(c *gin.Context) {
+}
+
 func handleProblems(c *gin.Context) {
-	session := noobsess.Default(c)
-
-	data := struct {
-		Admin   bool
-		Message string
-	}{}
-	messages := session.Flashes()
-	if len(messages) > 0 {
-		data.Message = messages[0].(string)
-	}
-	data.Admin = session.IsAdmin()
-
-	session.Save()
-	c.HTML(http.StatusOK, "problems.tmpl", data)
+	c.HTML(http.StatusOK, "problems.tmpl", nil)
 }
 
 func handleProblem(c *gin.Context) {
 	session := noobsess.Default(c)
-
 	data := struct {
-		Message string
-	}{}
-	messages := session.Flashes()
-	if len(messages) > 0 {
-		data.Message = messages[0].(string)
+		Admin bool
+	}{
+		session.IsAdmin(),
 	}
-
 	session.Save()
+
 	c.HTML(http.StatusOK, "problem.tmpl", data)
 }

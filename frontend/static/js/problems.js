@@ -3,7 +3,7 @@ window.onload = function() {
 
     function createProblem(id, name) {
         const problem = document.createElement("a");
-        problem.href = "/problem/" + id;
+        problem.href = "/problem/" + id + "/";
 
         const text = document.createTextNode(name);
         problem.appendChild(text);
