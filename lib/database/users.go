@@ -5,12 +5,9 @@ import (
 
 	"github.com/globalsign/mgo/bson"
 	"golang.org/x/crypto/bcrypt"
-)
 
-type Credential struct {
-	Username string `form:"username" binding:"required"`
-	Password string `form:"password" binding:"required"`
-}
+	. "github.com/kzh/noob/lib/model"
+)
 
 func Authenticate(cred Credential) (bson.M, error) {
 	users := db.C("users")

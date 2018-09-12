@@ -8,6 +8,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 
 	noobdb "github.com/kzh/noob/lib/database"
+	"github.com/kzh/noob/lib/model"
 	noobsess "github.com/kzh/noob/lib/sessions"
 )
 
@@ -26,7 +27,7 @@ func handleLogin(ctx *gin.Context) {
 		return
 	}
 
-	var cred noobdb.Credential
+	var cred model.Credential
 	if err := ctx.ShouldBind(&cred); err != nil {
 		session.AddFlash("Invalid username or password.")
 		redirect = "/login/"
@@ -64,7 +65,7 @@ func handleRegister(ctx *gin.Context) {
 		return
 	}
 
-	var cred noobdb.Credential
+	var cred model.Credential
 	if err := ctx.ShouldBind(&cred); err != nil {
 		session.AddFlash("Invalid username or password.")
 		redirect = "/register/"

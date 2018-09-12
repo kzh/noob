@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	noobdb "github.com/kzh/noob/lib/database"
+	"github.com/kzh/noob/lib/model"
 	noobsess "github.com/kzh/noob/lib/sessions"
 )
 
@@ -19,7 +20,7 @@ func handleCreate(ctx *gin.Context) {
 		ctx.Redirect(http.StatusSeeOther, redirect)
 	}()
 
-	var prob noobdb.ProblemData
+	var prob model.ProblemData
 	if err := ctx.ShouldBind(&prob); err != nil {
 		redirect = "/"
 		session.AddFlash("Invalid form data format")
@@ -63,7 +64,7 @@ func handleEdit(ctx *gin.Context) {
 		ctx.Redirect(http.StatusSeeOther, redirect)
 	}()
 
-	var prob noobdb.Problem
+	var prob model.Problem
 	if err := ctx.ShouldBind(&prob); err != nil {
 		redirect = "/"
 		session.AddFlash("Invalid form data format")
@@ -90,7 +91,7 @@ func handleDelete(ctx *gin.Context) {
 		ctx.Redirect(http.StatusSeeOther, redirect)
 	}()
 
-	var prob noobdb.ProblemID
+	var prob model.ProblemID
 	if err := ctx.ShouldBind(&prob); err != nil {
 		redirect = "/"
 		session.AddFlash("Invalid form data format")
