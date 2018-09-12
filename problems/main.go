@@ -60,6 +60,7 @@ func main() {
 	admin.POST("/create", handleCreate)
 	admin.POST("/edit", handleEdit)
 	admin.POST("/delete", handleDelete)
+	admin.GET("/get/:id/io", handleSelectIO)
 
 	r.Run()
 }

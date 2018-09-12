@@ -36,6 +36,24 @@ func handleCreate(ctx *gin.Context) {
 	redirect = "/problem/" + problem + "/"
 }
 
+func handleSelectIO(ctx *gin.Context) {
+	id := ctx.Param("id")
+	io, err := noobdb.IOProblem(id)
+	if err == nil {
+		ctx.JSON(http.StatusOK, io)
+		return
+	}
+
+	status := http.StatusInternalServerError
+	if err == noobdb.ErrNoSuchProblem {
+		status = http.StatusNotFound
+	}
+
+	ctx.JSON(status, gin.H{
+		"error": err.Error(),
+	})
+}
+
 func handleEdit(ctx *gin.Context) {
 	var redirect string
 	session := noobsess.Default(ctx)

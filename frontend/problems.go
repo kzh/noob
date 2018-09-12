@@ -24,6 +24,7 @@ func handleCreate(c *gin.Context) {
 }
 
 func handleEdit(c *gin.Context) {
+	c.HTML(http.StatusOK, "edit.tmpl", nil)
 }
 
 func handleProblems(c *gin.Context) {

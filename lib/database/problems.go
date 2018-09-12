@@ -32,6 +32,11 @@ type ProblemSnap struct {
 	Description string `json:"description" bson:"description"`
 }
 
+type ProblemIO struct {
+	In  string `json:"inputs" bson:"inputs"`
+	Out string `json:"outputs" bson:"outputs"`
+}
+
 func CreateProblem(p ProblemData) (string, error) {
 	problems := db.C("problems")
 
@@ -155,4 +160,10 @@ func SnapProblem(id string) (ProblemSnap, error) {
 	var p ProblemSnap
 	err := problem(id, &p)
 	return p, err
+}
+
+func IOProblem(id string) (ProblemIO, error) {
+	var io ProblemIO
+	err := problem(id, &io)
+	return io, err
 }

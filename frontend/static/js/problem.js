@@ -28,7 +28,7 @@ window.onload = function() {
 
         title.innerText = "Problem: " + data.name;
         name.innerText = data.name;
-        description.innerText = data.description;
+        description.textContent = data.description;
 
         const content = document.querySelector(".content");
         content.classList.remove("hidden");
@@ -49,12 +49,8 @@ window.onload = function() {
         });
     }
 
-    const delForm = document.getElementById("delete");
     const idEl = document.querySelector("input[name=\"id\"]");
-    if (delForm) {
-        delForm.addEventListener("submit", function() {
-            idEl.value = id;
-            return true;
-        });
+    if (idEl) {
+        idEl.value = id;
     }
 }

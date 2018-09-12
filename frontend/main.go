@@ -62,6 +62,7 @@ func main() {
 	admin.Use(noobsess.LoggedIn())
 	admin.Use(noobsess.Admin())
 	admin.GET("/create/", handleCreate)
+	admin.GET("/problem/:id/edit/", handleEdit)
 
 	if err := r.Run(); err != nil {
 		log.Println(err)

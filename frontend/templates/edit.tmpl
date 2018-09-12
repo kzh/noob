@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>Edit</title>
+        <script src="/static/js/edit.js"></script>
+        <link rel="stylesheet" href="/static/css/common.css">
+    </head>
+    <body>
+        <p class="message">Loading...</p>
+        <div class="content hidden">
+            <form method="POST" action="/api/problems/edit">
+                <input class="hidden" type="text" name="id">
+                <input type="text" name="name">
+                <br>
+                <textarea name="description"></textarea>
+                <br>
+                <textarea name="inputs"></textarea>
+                <br>
+                <textarea name="outputs"></textarea>
+                <br>
+                <input type="submit">
+            </form>
+        </div>
+    </body>
+</html>
