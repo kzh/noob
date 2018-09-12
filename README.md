@@ -74,7 +74,7 @@ $ kubectl delete pod <microservice>
 ```
 
 #### Personal Notes
-- Helm update will mess up the redis k8s secret since the secret does not update while the redis password will. The solution to this is just do a hard delete and install when updating the entire chart.
+- Helm update will mess up the redis k8s secret since the secret does not update while the redis password will. The solution to this is just do a hard delete and install when updating the entire chart. (Temp fixed)
 
 #### Sidetrack
 - Set up continuous integration and deployment.

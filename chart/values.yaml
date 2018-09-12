@@ -8,6 +8,16 @@ nginx-ingress:
         create: true
     defaultBackend:
         enabled: false
+mongodb:
+    mongodbRootPassword: "MONGODB_TEMP"
 redis:
     cluster:
         enabled: false
+    password: "REDIS_TEMP"
+rabbitmq:
+    livenessProbe:
+        enabled: false
+    readinessProbe:
+        enabled: false
+    rabbitmq:
+        password: "RABBITMQ_TEMP"
