@@ -73,12 +73,12 @@ func handleEdit(ctx *gin.Context) {
 
 	err := noobdb.EditProblem(prob)
 	if err != nil {
+		session.AddFlash(err.Error())
 		redirect = "/"
 	}
-	log.Println(prob)
 
 	session.AddFlash("Success!")
-	redirect = "/"
+	redirect = "/problem/" + prob.ID + "/edit/"
 }
 
 func handleDelete(ctx *gin.Context) {

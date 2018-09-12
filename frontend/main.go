@@ -59,8 +59,8 @@ func main() {
 
 	// Admin
 	admin := r.Group("/")
-	admin.Use(noobsess.LoggedIn())
-	admin.Use(noobsess.Admin())
+	admin.Use(noobsess.LoggedIn(true))
+	admin.Use(noobsess.Admin(true))
 	admin.GET("/create/", handleCreate)
 	admin.GET("/problem/:id/edit/", handleEdit)
 

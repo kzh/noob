@@ -54,13 +54,18 @@ func main() {
 	r.GET("/get/:id", handleSelect)
 
 	admin := r.Group("/")
-	admin.Use(noobsess.LoggedIn())
-	admin.Use(noobsess.Admin())
+	admin.Use(noobsess.LoggedIn(true))
+	admin.Use(noobsess.Admin(true))
 
 	admin.POST("/create", handleCreate)
 	admin.POST("/edit", handleEdit)
 	admin.POST("/delete", handleDelete)
-	admin.GET("/get/:id/io", handleSelectIO)
+
+	adminNR := r.Group("/")
+	adminNR.Use(noobsess.LoggedIn(false))
+	adminNR.Use(noobsess.Admin(false))
+
+	adminNR.GET("/get/:id/io", handleSelectIO)
 
 	r.Run()
 }
