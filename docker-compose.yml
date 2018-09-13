@@ -24,3 +24,11 @@ services:
     image: uhkevin/noob-problems
     ports:
     - "8080:8080"
+  submissions:
+    build:
+      context: .
+      dockerfile: ./submissions/Dockerfile
+    container_name: uhkevin/noob-submissions
+    image: uhkevin/noob-submissions
+    ports:
+    - "8080:8080"

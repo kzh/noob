@@ -131,6 +131,14 @@
   version = "1.0.1"
 
 [[projects]]
+  branch = "master"
+  digest = "1:0c088044c1c1ee83e723692442df4fec9b3f2e57f7a99773485c97adfbc31695"
+  name = "github.com/streadway/amqp"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "70e15c650864f4fc47f5d3c82ea117285480895d"
+
+[[projects]]
   digest = "1:03aa6e485e528acb119fb32901cf99582c380225fc7d5a02758e08b180cb56c3"
   name = "github.com/ugorji/go"
   packages = ["codec"]
@@ -182,6 +190,7 @@
     "github.com/gin-gonic/gin",
     "github.com/globalsign/mgo",
     "github.com/globalsign/mgo/bson",
+    "github.com/streadway/amqp",
     "golang.org/x/crypto/bcrypt",
   ]
   solver-name = "gps-cdcl"

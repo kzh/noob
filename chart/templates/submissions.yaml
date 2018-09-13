@@ -1,0 +1,69 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-submissions
+  labels:
+    app: {{ .Release.Name }}-submissions
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-submissions
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-submissions
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-submissions
+        image: uhkevin/noob-submissions
+        env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: noob-redis
+                key: redis-password
+          - name: MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: noob-mongodb
+                key: mongodb-root-password
+          - name: RABBITMQ_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: noob-rabbitmq
+                key: rabbitmq-password 
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-submissions
+spec:
+  selector:
+    app: {{ .Release.Name }}-submissions
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: noob-submissions
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+    - hosts:
+      - noob.kzh.app
+      secretName: tls-certificate
+  rules:
+  - host: noob.kzh.app
+    http:
+      paths:
+      - path: /api/submissions/
+        backend:
+          serviceName: noob-submissions
+          servicePort: 8080
