@@ -46,9 +46,7 @@ func main() {
 
 	r := gin.Default()
 
-	log.Println("Connecting to Redis...")
 	r.Use(noobsess.Sessions())
-	log.Println("Connected to Redis.")
 
 	r.GET("/list", handleList)
 	r.GET("/get/:id", handleSelect)
@@ -67,5 +65,7 @@ func main() {
 
 	adminNR.GET("/get/:id/io", handleSelectIO)
 
-	r.Run()
+	if err := r.Run(); err != nil {
+		log.Println(err)
+	}
 }

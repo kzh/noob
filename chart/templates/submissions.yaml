@@ -18,10 +18,10 @@ spec:
       - name: {{ .Release.Name }}-submissions
         image: uhkevin/noob-submissions
         env:
-          - name: REDIS_PASSWORD
+          - name: SESSIONS_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: noob-redis
+                name: noob-sessions
                 key: redis-password
           - name: MONGODB_PASSWORD
             valueFrom:

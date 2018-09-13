@@ -36,12 +36,8 @@ func main() {
 	// Create gin router
 	r := gin.Default()
 
-	log.Println("Connecting to Redis...")
-
 	// Use redis sessions middleware
 	r.Use(noobsess.Sessions())
-
-	log.Println("Connected to Redis.")
 
 	r.Static("/static", "./static/")
 	r.LoadHTMLGlob("templates/*.tmpl")

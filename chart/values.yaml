@@ -14,6 +14,10 @@ redis:
     cluster:
         enabled: false
     password: "REDIS_TEMP"
+sessions:
+    cluster:
+        enabled: false
+    password: "SESSIONS_TEMP"
 rabbitmq:
     livenessProbe:
         enabled: false

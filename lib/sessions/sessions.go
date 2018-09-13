@@ -1,6 +1,7 @@
 package sessions
 
 import (
+	"log"
 	"os"
 
 	"github.com/gin-contrib/sessions"
@@ -9,11 +10,13 @@ import (
 )
 
 func Sessions() gin.HandlerFunc {
+	log.Println("Connecting to Redis Sessions...")
+
 	store, err := redis.NewStore(
 		10,
 		"tcp",
-		"noob-redis-master:6379",
-		os.Getenv("REDIS_PASSWORD"),
+		"noob-sessions-master:6379",
+		os.Getenv("SESSIONS_PASSWORD"),
 		[]byte("NOOB_SESSION_SECRET"),
 		//[]byte(os.Getenv("SESSION_SECRET")),
 	)
@@ -21,6 +24,7 @@ func Sessions() gin.HandlerFunc {
 		panic(err)
 	}
 
+	log.Println("Connected to Redis Sessions.")
 	return sessions.Sessions("noob", store)
 }
 

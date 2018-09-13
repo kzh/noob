@@ -105,9 +105,7 @@ func main() {
 	// Create gin router
 	r := gin.Default()
 
-	log.Println("Connecting to Redis...")
 	r.Use(noobsess.Sessions())
-	log.Println("Connected to Redis.")
 
 	r.POST("/login", handleLogin)
 	r.POST("/register", handleRegister)

@@ -18,10 +18,10 @@ spec:
       - name: {{ .Release.Name }}-frontend
         image: uhkevin/noob-frontend
         env:
-          - name: REDIS_PASSWORD
+          - name: SESSIONS_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: noob-redis
+                name: noob-sessions
                 key: redis-password
         ports:
         - containerPort: 8080

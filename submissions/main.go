@@ -26,14 +26,12 @@ func main() {
 	log.Println("Noob: Problems MS is starting...")
 
 	r := gin.Default()
-
-	log.Println("Connecting to Redis...")
 	r.Use(noobsess.Sessions())
-	log.Println("Connected to Redis.")
-
 	r.Use(noobsess.LoggedIn(false))
 
 	r.POST("/submit", handleSubmit)
 
-	r.Run()
+	if err := r.Run(); err != nil {
+		log.Println(err)
+	}
 }
