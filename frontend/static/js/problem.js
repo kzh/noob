@@ -18,6 +18,7 @@ window.onload = function() {
             err = new Error("Service unavailable.");
         }
 
+        msg.classList.remove("hidden");
         msg.innerText = err;
         title.innerText = "Error";
     }
@@ -53,4 +54,41 @@ window.onload = function() {
     if (idEl) {
         idEl.value = id;
     }
+
+    function submitCallback(res) {
+        if (res.message != undefined) {
+            msg.classList.remove("hidden"); 
+            msg.innerText = res.message;
+        }
+    }
+
+    const submitBtn = document.getElementById("submit");
+    submitBtn.addEventListener("click", function() {
+        const code = document.getElementById("code");
+
+        const submission = {
+            id: id,
+            code: code.value,
+        };
+
+        let formBody = [];
+        for (const property in submission) {
+              const encodedKey = encodeURIComponent(property);
+              const encodedValue = encodeURIComponent(submission[property]);
+              formBody.push(encodedKey + "=" + encodedValue);
+        }
+        formBody = formBody.join("&");
+        
+        fetch("/api/submissions/submit", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: formBody,
+        })
+        .then(res => res.json())
+        .then(handleError)
+        .then(submitCallback)
+        .catch(error);
+    });
 }

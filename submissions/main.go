@@ -6,9 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	//	noobdb "github.com/kzh/noob/lib/database"
 	"github.com/kzh/noob/lib/model"
-	_ "github.com/kzh/noob/lib/queue"
+	"github.com/kzh/noob/lib/queue"
 	noobsess "github.com/kzh/noob/lib/sessions"
 )
 
@@ -20,6 +19,17 @@ func handleSubmit(ctx *gin.Context) {
 		})
 		return
 	}
+
+	if err := queue.Schedule(submission); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Success!",
+	})
 }
 
 func main() {
