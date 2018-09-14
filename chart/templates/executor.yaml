@@ -1,0 +1,25 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-executor
+  labels:
+    app: {{ .Release.Name }}-executor
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-executor
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-executor
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-executor
+        image: uhkevin/noob-executor
+        env:
+          - name: RABBITMQ_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: noob-rabbitmq
+                key: rabbitmq-password

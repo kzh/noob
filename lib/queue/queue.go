@@ -78,3 +78,21 @@ func Schedule(s model.Submission) error {
 	}
 	return ch.Publish("", q.Name, false, false, publishing)
 }
+
+func Poll() (<-chan amqp.Delivery, error) {
+	ch, q, err := queue()
+	if err != nil {
+		return nil, err
+	}
+
+	msgs, err := ch.Consume(
+		q.Name,
+		"",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	return msgs, err
+}

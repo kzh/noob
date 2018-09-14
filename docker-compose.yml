@@ -32,3 +32,9 @@ services:
     image: uhkevin/noob-submissions
     ports:
     - "8080:8080"
+  executor:
+    build:
+      context: .
+      dockerfile: ./executor/Dockerfile
+    container_name: uhkevin/noob-executor
+    image: uhkevin/noob-executor
