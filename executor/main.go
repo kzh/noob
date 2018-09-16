@@ -74,14 +74,15 @@ func buildImage(id string, buildContext io.Reader) error {
 }
 
 func handle(msg amqp.Delivery) {
-	log.Println("Incoming submission.")
-
 	var submission model.Submission
 	err := json.Unmarshal(msg.Body, &submission)
 	if err != nil {
 		log.Println(err)
 		return
 	}
+
+	log.Println("Incoming submission.")
+	log.Println("ID: " + submission.ID)
 
 	ctx, err := buildImageContext(submission.Code)
 	if err != nil {
