@@ -25,3 +25,5 @@ spec:
                 key: rabbitmq-password
           - name: DOCKER_HOST
             value: "tcp://noob-dockerd:2375"
+          - name: DOCKER_API_VERSION
+            value: "1.38"

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 
 	"github.com/kzh/noob/lib/model"
 	"github.com/kzh/noob/lib/queue"
@@ -19,6 +20,7 @@ func handleSubmit(ctx *gin.Context) {
 		})
 		return
 	}
+	submission.ID = uuid.New().String()
 
 	if err := queue.Schedule(submission); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{

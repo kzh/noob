@@ -54,5 +54,13 @@
   name = "github.com/streadway/amqp"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/docker/docker"
-  version = "1.13.1"
+
+[[override]]
+  branch = "master"
+  name = "github.com/docker/distribution"
+
+[[constraint]]
+  name = "github.com/google/uuid"
+  version = "1.0.0"

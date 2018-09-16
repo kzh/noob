@@ -48,7 +48,7 @@ func buildImageContext(code string) (io.Reader, error) {
 	return buf, nil
 }
 
-func buildImage(buildContext io.Reader) error {
+func buildImage(id string, buildContext io.Reader) error {
 	ctx := context.Background()
 	res, err := dock.ImageBuild(
 		ctx,
@@ -57,6 +57,7 @@ func buildImage(buildContext io.Reader) error {
 			NoCache:     true,
 			Remove:      true,
 			ForceRemove: true,
+			Tags:        []string{id},
 			Context:     buildContext,
 			Dockerfile:  "Dockerfile",
 		},
@@ -88,7 +89,7 @@ func handle(msg amqp.Delivery) {
 		return
 	}
 
-	err = buildImage(ctx)
+	err = buildImage(submission.ID, ctx)
 	if err != nil {
 		log.Println(err)
 		return
