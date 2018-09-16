@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"log"
 
@@ -18,13 +19,15 @@ import (
 
 var dock *client.Client
 
-func buildImage(code string) error {
+func buildImageContext(code string) (io.Reader, error) {
 	raw, err := ioutil.ReadFile("image.tar")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	buf := bytes.NewBuffer(raw[:len(raw)-1024])
+	trim := len(raw) - 1024
+	buf := bytes.NewBuffer(raw[:trim])
+
 	w := tar.NewWriter(buf)
 	header := &tar.Header{
 		Name: "main.go",
@@ -32,24 +35,30 @@ func buildImage(code string) error {
 	}
 	err = w.WriteHeader(header)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	_, err = w.Write([]byte(code))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if err := w.Close(); err != nil {
-		return err
+		return nil, err
 	}
 
+	return buf, nil
+}
+
+func buildImage(buildContext io.Reader) error {
 	ctx := context.Background()
 	res, err := dock.ImageBuild(
 		ctx,
-		buf,
+		buildContext,
 		types.ImageBuildOptions{
-			Context:    buf,
-			Dockerfile: "Dockerfile",
-			Remove:     true,
+			NoCache:     true,
+			Remove:      true,
+			ForceRemove: true,
+			Context:     buildContext,
+			Dockerfile:  "Dockerfile",
 		},
 	)
 	if err != nil {
@@ -64,18 +73,26 @@ func buildImage(code string) error {
 }
 
 func handle(msg amqp.Delivery) {
+	log.Println("Incoming submission.")
+
 	var submission model.Submission
 	err := json.Unmarshal(msg.Body, &submission)
 	if err != nil {
-		panic(err)
+		log.Println(err)
+		return
 	}
 
-	log.Println("Building image...")
-	err = buildImage(submission.Code)
+	ctx, err := buildImageContext(submission.Code)
 	if err != nil {
 		log.Println(err)
+		return
 	}
-	log.Println("Finished building image?")
+
+	err = buildImage(ctx)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 }
 
 func main() {
