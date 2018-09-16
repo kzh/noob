@@ -33,7 +33,7 @@ func handleSubmit(ctx *gin.Context) {
 }
 
 func main() {
-	log.Println("Noob: Problems MS is starting...")
+	log.Println("Noob: Submissions MS is starting...")
 
 	r := gin.Default()
 	r.Use(noobsess.Sessions())

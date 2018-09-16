@@ -10,5 +10,6 @@ FROM alpine
 WORKDIR /app/
 
 COPY --from=build /go/src/github.com/kzh/noob/main ./executor
+COPY ./executor/image.tar .
 
 CMD ["./executor"]

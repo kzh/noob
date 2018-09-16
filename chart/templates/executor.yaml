@@ -5,7 +5,7 @@ metadata:
   labels:
     app: {{ .Release.Name }}-executor
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: {{ .Release.Name }}-executor
@@ -23,3 +23,5 @@ spec:
               secretKeyRef:
                 name: noob-rabbitmq
                 key: rabbitmq-password
+          - name: DOCKER_HOST
+            value: "tcp://noob-dockerd:2375"

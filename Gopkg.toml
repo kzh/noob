@@ -52,3 +52,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/streadway/amqp"
+
+[[constraint]]
+  name = "github.com/docker/docker"
+  version = "1.13.1"
