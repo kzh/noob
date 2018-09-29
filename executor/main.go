@@ -13,8 +13,8 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/streadway/amqp"
 
+	"github.com/kzh/noob/lib/message"
 	"github.com/kzh/noob/lib/model"
-	"github.com/kzh/noob/lib/queue"
 )
 
 var dock *client.Client
@@ -106,7 +106,7 @@ func main() {
 		panic(err)
 	}
 
-	msgs, err := queue.Poll()
+	msgs, err := message.Poll()
 	if err != nil {
 		panic(err)
 	}

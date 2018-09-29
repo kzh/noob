@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
+	"github.com/kzh/noob/lib/message"
 	"github.com/kzh/noob/lib/model"
-	"github.com/kzh/noob/lib/queue"
 	noobsess "github.com/kzh/noob/lib/sessions"
 )
 
@@ -22,16 +22,12 @@ func handleSubmit(ctx *gin.Context) {
 	}
 	submission.ID = uuid.New().String()
 
-	if err := queue.Schedule(submission); err != nil {
+	if err := message.Schedule(submission); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Success!",
-	})
 }
 
 func main() {
