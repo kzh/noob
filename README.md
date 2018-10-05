@@ -1,6 +1,7 @@
-### Noob [August 2018]
+### Noob
+A scalable distributed microservice architecture platform running on Kubernetes capable of judging and orchestrating the execution of user submitted code.
 
-The goal is to create a leetcode clone on Kubernetes. Noob is mainly for me to learn the popular cloud tools being Kubernetes, Docker, etc as well as to explore microservice architecture and further develop my system design experience. The hope is for Noob to be scalable so in case of increasing traffic, Noob can easily adapt and handle the load.
+<img src="https://raw.githubusercontent.com/kzh/noob/8e83d650de4d94855582c615944ef166819081f9/images/Noob%20Architecture.svg?sanitize=true">
 
 #### Roadmap
 - Set up Kubernetes Cluster.
