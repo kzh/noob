@@ -9,12 +9,14 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/streadway/amqp"
 
+	noobdb "github.com/kzh/noob/lib/database"
 	"github.com/kzh/noob/lib/message"
 	"github.com/kzh/noob/lib/model"
 )
@@ -125,15 +127,26 @@ func test(uid, in, out string) (string, error) {
 		return "", err
 	}
 
-	n, err := fmt.Fscanf(exec.Reader, in+out)
-	log.Printf("%d %#v", n, err)
+	_, err = fmt.Fscanf(exec.Reader, in+out)
+	if err != nil {
+		line, _ := ioutil.ReadAll(exec.Reader)
+		log.Println("FAILED")
+		fmt.Printf("Error:\n%s\n", string(line))
+		return string(line), nil
+	}
 
-	/*
-		line, err := ioutil.ReadAll(exec.Reader)
-		log.Printf("%s\n%#v\n", string(line), line)
-	*/
-
+	log.Println("PASSED")
 	return "", err
+}
+
+func sanitize(in string) string {
+	return strings.Map(func(r rune) rune {
+		if r == '\n' || r == '\r' {
+			return -1
+		}
+
+		return r
+	}, in)
 }
 
 func handle(msg amqp.Delivery) {
@@ -165,11 +178,18 @@ func handle(msg amqp.Delivery) {
 		return
 	}
 
-	_, err = test(cid, "100 100\n", "200")
-	if err != nil {
-		log.Println(err)
-		return
+	probio, err := noobdb.IOProblem(submission.ProblemID)
+	inputs := strings.Split(probio.In, "---")
+	outputs := strings.Split(probio.Out, "---")
+
+	for i, in := range inputs {
+		resp, err := test(cid, sanitize(in)+"\n", sanitize(outputs[i]))
+		if resp != "" || err != nil {
+			log.Printf("%s %#v\n", resp, err)
+		}
 	}
+
+	log.Println("Finishing handling submission.")
 }
 
 func main() {

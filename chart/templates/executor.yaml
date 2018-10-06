@@ -23,6 +23,11 @@ spec:
               secretKeyRef:
                 name: noob-rabbitmq
                 key: rabbitmq-password
+          - name: MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: noob-mongodb
+                key: mongodb-root-password
           - name: DOCKER_HOST
             value: "tcp://noob-dockerd:2375"
           - name: DOCKER_API_VERSION
