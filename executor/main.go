@@ -81,7 +81,7 @@ func prepareContainer(uid string) (string, error) {
 	ctx := context.Background()
 	resp, err := dock.ContainerCreate(ctx, &container.Config{
 		Image: uid,
-	}, nil, nil, "")
+	}, nil, nil, uid)
 	if err != nil {
 		return "", err
 	}
@@ -139,6 +139,29 @@ func test(uid, in, out string) (string, error) {
 	return "", err
 }
 
+func clean(uid string) error {
+	ctx := context.Background()
+	err := dock.ContainerRemove(
+		ctx, uid,
+		types.ContainerRemoveOptions{
+			RemoveVolumes: true,
+			Force:         true,
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	_, err = dock.ImageRemove(
+		ctx, uid,
+		types.ImageRemoveOptions{
+			Force:         true,
+			PruneChildren: true,
+		},
+	)
+	return err
+}
+
 func sanitize(in string) string {
 	return strings.Map(func(r rune) rune {
 		if r == '\n' || r == '\r' {
@@ -187,6 +210,12 @@ func handle(msg amqp.Delivery) {
 		if resp != "" || err != nil {
 			log.Printf("%s %#v\n", resp, err)
 		}
+	}
+
+	err = clean(submission.ID)
+	if err != nil {
+		log.Println(err)
+		return
 	}
 
 	log.Println("Finishing handling submission.")
