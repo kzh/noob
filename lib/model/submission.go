@@ -2,11 +2,11 @@ package model
 
 type Submission struct {
 	ID        string
-	ProblemID string `form:"id" binding:"required"`
-	Code      string `form:"code" binding:"required"`
+	ProblemID string `json:"problem"`
+	Code      string `json:"code"`
 }
 
 type SubmissionResult struct {
-	stage  string
-	status string
+	Stage  string `json:"stage"`
+	Status string `json:"status"`
 }

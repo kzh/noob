@@ -2,31 +2,47 @@ package main
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
 
 	"github.com/kzh/noob/lib/message"
 	"github.com/kzh/noob/lib/model"
 	noobsess "github.com/kzh/noob/lib/sessions"
 )
 
+var upgrader = websocket.Upgrader{}
+
 func handleSubmit(ctx *gin.Context) {
+	c, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	if err != nil {
+		return
+	}
+	defer c.Close()
+
 	var submission model.Submission
-	if err := ctx.ShouldBind(&submission); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+	if err := c.ReadJSON(&submission); err != nil {
 		return
 	}
 	submission.ID = uuid.New().String()
 
 	if err := message.Schedule(submission); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
 		return
+	}
+
+	results, err := message.Subscribe(submission.ID)
+	if err != nil {
+		return
+	}
+
+	log.Println("Results:")
+	for result := range results {
+		log.Println(string(result.Body))
+		err := c.WriteMessage(websocket.TextMessage, result.Body)
+		if err != nil {
+			return
+		}
 	}
 }
 
@@ -37,7 +53,7 @@ func main() {
 	r.Use(noobsess.Sessions())
 	r.Use(noobsess.LoggedIn(false))
 
-	r.POST("/submit", handleSubmit)
+	r.GET("/submit", handleSubmit)
 
 	if err := r.Run(); err != nil {
 		log.Println(err)

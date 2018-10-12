@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/docker/docker/api/types"
@@ -198,6 +199,11 @@ func handle(msg amqp.Delivery) {
 	cid, err := prepareContainer(submission.ID)
 	if err != nil {
 		log.Println(err)
+
+		var result model.SubmissionResult
+		result.Stage = "Compile"
+		result.Status = "FAILED"
+		message.Publish(submission.ID, result)
 		return
 	}
 
@@ -207,9 +213,16 @@ func handle(msg amqp.Delivery) {
 
 	for i, in := range inputs {
 		resp, err := test(cid, sanitize(in)+"\n", sanitize(outputs[i]))
+
+		var result model.SubmissionResult
+		result.Stage = strconv.Itoa(i + 1)
+		result.Status = "PASSED"
 		if resp != "" || err != nil {
+			result.Status = "FAILED"
 			log.Printf("%s %#v\n", resp, err)
 		}
+
+		message.Publish(submission.ID, result)
 	}
 
 	err = clean(submission.ID)
@@ -236,6 +249,6 @@ func main() {
 	}
 
 	for msg := range msgs {
-		handle(msg)
+		go handle(msg)
 	}
 }

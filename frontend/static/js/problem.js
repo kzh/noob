@@ -67,28 +67,17 @@ window.onload = function() {
         const code = document.getElementById("code");
 
         const submission = {
-            id: id,
+            problem: id,
             code: code.value,
         };
 
-        let formBody = [];
-        for (const property in submission) {
-              const encodedKey = encodeURIComponent(property);
-              const encodedValue = encodeURIComponent(submission[property]);
-              formBody.push(encodedKey + "=" + encodedValue);
+        const addr = "wss://" + window.location.hostname + "/api/submissions/submit";
+        const ws = new WebSocket(addr);
+        ws.onmessage = function(event) {
+            console.log(event.data);
         }
-        formBody = formBody.join("&");
-        
-        fetch("/api/submissions/submit", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: formBody,
-        })
-        .then(res => res.json())
-        .then(handleError)
-        .then(submitCallback)
-        .catch(error);
+        ws.onopen = function() {
+            ws.send(JSON.stringify(submission));
+        }
     });
 }
