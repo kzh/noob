@@ -62,8 +62,16 @@ window.onload = function() {
         }
     }
 
+    const resultsEl = document.getElementById("results");
+    function displayResult(res) {
+        const resEl = document.createElement("p");
+        resEl.innerText = "Stage: " + res.stage + " - " + res.status;
+        resultsEl.appendChild(resEl);
+    }
+
     const submitBtn = document.getElementById("submit");
     submitBtn.addEventListener("click", function() {
+        resultsEl.innerText = "";
         const code = document.getElementById("code");
 
         const submission = {
@@ -75,6 +83,7 @@ window.onload = function() {
         const ws = new WebSocket(addr);
         ws.onmessage = function(event) {
             console.log(event.data);
+            displayResult(JSON.parse(event.data));
         }
         ws.onopen = function() {
             ws.send(JSON.stringify(submission));
