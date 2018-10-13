@@ -1,5 +1,6 @@
 ### Noob
-A scalable distributed microservice architecture platform running on Kubernetes capable of judging and orchestrating the execution of user submitted code.
+A scalable distributed microservice architecture platform running on Kubernetes capable of judging and orchestrating the execution of user submitted code.  
+<h3 align="center"><a href="https://www.youtube.com/watch?v=5R3UGIH7fm8">WIP Demo Video</a></h3>
 
 <img src="https://raw.githubusercontent.com/kzh/noob/8e83d650de4d94855582c615944ef166819081f9/images/Noob%20Architecture.svg?sanitize=true">
 
