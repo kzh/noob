@@ -14,6 +14,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 	"github.com/streadway/amqp"
 
@@ -160,6 +161,7 @@ func clean(uid string) error {
 			PruneChildren: true,
 		},
 	)
+
 	return err
 }
 
@@ -199,6 +201,11 @@ func handle(msg amqp.Delivery) {
 	cid, err := prepareContainer(submission.ID)
 	if err != nil {
 		log.Println(err)
+
+		_, err = dock.ImagesPrune(
+			context.Background(),
+			filters.Args{},
+		)
 
 		var result model.SubmissionResult
 		result.Stage = "Compile"
