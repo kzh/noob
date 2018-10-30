@@ -29,6 +29,10 @@ spec:
                 name: noob-mongodb
                 key: mongodb-root-password
           - name: DOCKER_HOST
-            value: "tcp://noob-dockerd:2375"
+            value: "tcp://localhost:2375"
           - name: DOCKER_API_VERSION
             value: "1.38"
+      - name: {{ .Release.Name }}-dockerd
+        image: docker:18.06-dind
+        securityContext:
+          privileged: true
