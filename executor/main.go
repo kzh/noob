@@ -60,7 +60,6 @@ func buildImage(id string, buildContext io.Reader) error {
 		ctx,
 		buildContext,
 		types.ImageBuildOptions{
-			NoCache:     true,
 			Remove:      true,
 			ForceRemove: true,
 			Tags:        []string{id},
@@ -81,9 +80,19 @@ func buildImage(id string, buildContext io.Reader) error {
 
 func prepareContainer(uid string) (string, error) {
 	ctx := context.Background()
-	resp, err := dock.ContainerCreate(ctx, &container.Config{
-		Image: uid,
-	}, nil, nil, uid)
+	resp, err := dock.ContainerCreate(
+		ctx,
+		&container.Config{
+			Image:           uid,
+			NetworkDisabled: true,
+		},
+		&container.HostConfig{
+			Resources: container.Resources{
+				Memory: 4*1024*1024 + 1,
+			},
+		},
+		nil, uid,
+	)
 	if err != nil {
 		return "", err
 	}
