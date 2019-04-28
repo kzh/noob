@@ -48,7 +48,7 @@ kind: Ingress
 metadata:
   name: noob-problems
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   tls:
     - hosts:
@@ -58,7 +58,7 @@ spec:
   - host: noob.kzh.app
     http:
       paths:
-      - path: /api/problems/
+      - path: /api/problems/?(.*)
         backend:
           serviceName: noob-problems
           servicePort: 8080
