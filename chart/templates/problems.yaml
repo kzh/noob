@@ -53,7 +53,7 @@ spec:
   tls:
     - hosts:
       - noob.kzh.app
-      secretName: tls-certificate
+      secretName: tls-cert
   rules:
   - host: noob.kzh.app
     http:
