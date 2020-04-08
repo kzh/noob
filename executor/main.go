@@ -126,7 +126,7 @@ func test(uid, in, out string) (string, error) {
 
 	exec, err := dock.ContainerExecAttach(
 		ctx, resp.ID,
-		types.ExecStartCheck{Tty: true},
+		types.ExecConfig{Tty: true},
 	)
 	if err != nil {
 		return "", err
