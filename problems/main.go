@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	noobdb "github.com/kzh/noob/lib/database"
-	noobsess "github.com/kzh/noob/lib/sessions"
+	noobdb "github.com/kzh/noob/pkg/database"
+	noobsess "github.com/kzh/noob/pkg/sessions"
 )
 
 func handleList(ctx *gin.Context) {

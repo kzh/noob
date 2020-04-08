@@ -5,7 +5,7 @@ import (
 
 	"github.com/streadway/amqp"
 
-	"github.com/kzh/noob/lib/model"
+	"github.com/kzh/noob/pkg/model"
 )
 
 func Subscribe(pubsub string) (<-chan amqp.Delivery, error) {

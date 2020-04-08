@@ -18,9 +18,9 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/streadway/amqp"
 
-	noobdb "github.com/kzh/noob/lib/database"
-	"github.com/kzh/noob/lib/message"
-	"github.com/kzh/noob/lib/model"
+	noobdb "github.com/kzh/noob/pkg/database"
+	"github.com/kzh/noob/pkg/message"
+	"github.com/kzh/noob/pkg/model"
 )
 
 var dock *client.Client

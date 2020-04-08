@@ -7,9 +7,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 
-	"github.com/kzh/noob/lib/message"
-	"github.com/kzh/noob/lib/model"
-	noobsess "github.com/kzh/noob/lib/sessions"
+	"github.com/kzh/noob/pkg/message"
+	"github.com/kzh/noob/pkg/model"
+	noobsess "github.com/kzh/noob/pkg/sessions"
 )
 
 var upgrader = websocket.Upgrader{}

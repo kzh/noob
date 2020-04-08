@@ -6,7 +6,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"golang.org/x/crypto/bcrypt"
 
-	. "github.com/kzh/noob/lib/model"
+	. "github.com/kzh/noob/pkg/model"
 )
 
 func Authenticate(cred Credential) (bson.M, error) {

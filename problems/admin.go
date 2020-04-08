@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	noobdb "github.com/kzh/noob/lib/database"
-	"github.com/kzh/noob/lib/model"
-	noobsess "github.com/kzh/noob/lib/sessions"
+	noobdb "github.com/kzh/noob/pkg/database"
+	"github.com/kzh/noob/pkg/model"
+	noobsess "github.com/kzh/noob/pkg/sessions"
 )
 
 func handleCreate(ctx *gin.Context) {

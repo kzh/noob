@@ -6,7 +6,7 @@ import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 
-	. "github.com/kzh/noob/lib/model"
+	. "github.com/kzh/noob/pkg/model"
 )
 
 func CreateProblem(p ProblemData) (string, error) {

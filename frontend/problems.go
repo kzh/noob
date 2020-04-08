@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	noobsess "github.com/kzh/noob/lib/sessions"
+	noobsess "github.com/kzh/noob/pkg/sessions"
 )
 
 func handleCreate(c *gin.Context) {

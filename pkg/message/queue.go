@@ -6,7 +6,7 @@ import (
 
 	"github.com/streadway/amqp"
 
-	"github.com/kzh/noob/lib/model"
+	"github.com/kzh/noob/pkg/model"
 )
 
 func Schedule(s model.Submission) error {

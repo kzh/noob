@@ -7,9 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo/bson"
 
-	noobdb "github.com/kzh/noob/lib/database"
-	"github.com/kzh/noob/lib/model"
-	noobsess "github.com/kzh/noob/lib/sessions"
+	noobdb "github.com/kzh/noob/pkg/database"
+	"github.com/kzh/noob/pkg/model"
+	noobsess "github.com/kzh/noob/pkg/sessions"
 )
 
 func handleLogin(ctx *gin.Context) {
