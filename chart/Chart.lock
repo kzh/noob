@@ -2,14 +2,11 @@ dependencies:
 - name: redis
   repository: https://kubernetes-charts.storage.googleapis.com/
   version: 3.7.3
-- name: redis
-  repository: https://kubernetes-charts.storage.googleapis.com/
-  version: 3.7.3
 - name: mongodb
   repository: https://kubernetes-charts.storage.googleapis.com/
   version: 4.0.4
 - name: rabbitmq
   repository: https://kubernetes-charts.storage.googleapis.com/
   version: 2.2.0
-digest: sha256:eb286305d29b56c6b8d0d5d1e584840a5c706f34ece641ca19f6a95f75d44974
-generated: 2019-04-06T22:50:34.314373-04:00
+digest: sha256:d619afd1248d8c243c6e5b7a19ca019d2d2c0387a4e4d02d00bd8b92606a52e4
+generated: "2020-04-09T12:32:46.535359-04:00"
