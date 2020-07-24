@@ -1,13 +1,3 @@
-nginx-ingress:
-    controller:
-        hostNetwork: true
-        service:
-            type: NodePort
-        defaultBackendService: "noob/noob-frontend"
-    rbac:
-        create: true
-    defaultBackend:
-        enabled: false
 mongodb:
     mongodbRootPassword: "MONGODB_TEMP"
 redis:
