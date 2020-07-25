@@ -88,7 +88,7 @@ func prepareContainer(uid string) (string, error) {
 		},
 		&container.HostConfig{
 			Resources: container.Resources{
-				Memory: 4*1024*1024 + 1,
+				MemoryReservation: 4*1024*1024 + 1,
 			},
 		},
 		nil, uid,
