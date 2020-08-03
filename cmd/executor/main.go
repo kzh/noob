@@ -16,7 +16,8 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
-	"github.com/opentracing/opentracing-go"
+	opentracing "github.com/opentracing/opentracing-go"
+	otlog "github.com/opentracing/opentracing-go/log"
 	"github.com/streadway/amqp"
 
 	noobdb "github.com/kzh/noob/pkg/database"
@@ -27,7 +28,13 @@ import (
 
 var dock *client.Client
 
-func buildImageContext(code string) (io.Reader, error) {
+func buildImageContext(parent opentracing.Span, code string) (io.Reader, error) {
+	span := opentracing.StartSpan(
+		"buildImageContext",
+		opentracing.ChildOf(parent.Context()),
+	)
+	defer span.Finish()
+
 	raw, err := ioutil.ReadFile("image.tar")
 	if err != nil {
 		return nil, err
@@ -56,8 +63,11 @@ func buildImageContext(code string) (io.Reader, error) {
 	return buf, nil
 }
 
-func buildImage(id string, buildContext io.Reader) error {
-	span := opentracing.StartSpan("buildImage")
+func buildImage(parent opentracing.Span, id string, buildContext io.Reader) error {
+	span := opentracing.StartSpan(
+		"buildImage",
+		opentracing.ChildOf(parent.Context()),
+	)
 	defer span.Finish()
 
 	ctx := context.Background()
@@ -83,7 +93,13 @@ func buildImage(id string, buildContext io.Reader) error {
 	return nil
 }
 
-func prepareContainer(uid string) (string, error) {
+func prepareContainer(parent opentracing.Span, uid string) (string, error) {
+	span := opentracing.StartSpan(
+		"prepareContainer",
+		opentracing.ChildOf(parent.Context()),
+	)
+	defer span.Finish()
+
 	ctx := context.Background()
 	resp, err := dock.ContainerCreate(
 		ctx,
@@ -155,7 +171,13 @@ func test(uid, in, out string) (string, error) {
 	return "", err
 }
 
-func clean(uid string) error {
+func clean(parent opentracing.Span, uid string) error {
+	span := opentracing.StartSpan(
+		"clean",
+		opentracing.ChildOf(parent.Context()),
+	)
+	defer span.Finish()
+
 	ctx := context.Background()
 	err := dock.ContainerRemove(
 		ctx, uid,
@@ -190,6 +212,9 @@ func sanitize(in string) string {
 }
 
 func handle(msg amqp.Delivery) {
+	span := opentracing.StartSpan("handleSubmission")
+	defer span.Finish()
+
 	var submission model.Submission
 	err := json.Unmarshal(msg.Body, &submission)
 	if err != nil {
@@ -197,22 +222,28 @@ func handle(msg amqp.Delivery) {
 		return
 	}
 
+	span.LogFields(
+		otlog.String("id", submission.ID),
+		otlog.String("problem", submission.ProblemID),
+		otlog.String("code", submission.Code),
+	)
+
 	log.Println("Incoming submission.")
 	log.Println("ID: " + submission.ID)
 
-	ctx, err := buildImageContext(submission.Code)
+	ctx, err := buildImageContext(span, submission.Code)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	err = buildImage(submission.ID, ctx)
+	err = buildImage(span, submission.ID, ctx)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	cid, err := prepareContainer(submission.ID)
+	cid, err := prepareContainer(span, submission.ID)
 	if err != nil {
 		log.Println(err)
 
@@ -246,7 +277,7 @@ func handle(msg amqp.Delivery) {
 		message.Publish(submission.ID, result)
 	}
 
-	err = clean(submission.ID)
+	err = clean(span, submission.ID)
 	if err != nil {
 		log.Println(err)
 		return
