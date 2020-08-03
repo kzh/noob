@@ -129,7 +129,51 @@ func prepareContainer(parent opentracing.Span, uid string) (string, error) {
 	return resp.ID, nil
 }
 
-func test(uid, in, out string) (string, error) {
+func test(parent opentracing.Span, container, problem, submission string) {
+	span := opentracing.StartSpan(
+		"test",
+		opentracing.ChildOf(parent.Context()),
+	)
+	defer span.Finish()
+
+	probio, err := noobdb.IOProblem(problem)
+	if err != nil {
+		var result model.SubmissionResult
+		result.Stage = "Internal"
+		result.Status = "FAILED"
+		message.Publish(submission, result)
+		return
+	}
+
+	inputs := strings.Split(probio.In, "---")
+	outputs := strings.Split(probio.Out, "---")
+
+	for i, in := range inputs {
+		resp, err := exec(span, container, sanitize(in)+"\n", sanitize(outputs[i]))
+
+		var result model.SubmissionResult
+		result.Stage = strconv.Itoa(i + 1)
+		result.Status = "PASSED"
+		if resp != "" || err != nil {
+			result.Status = "FAILED"
+			log.Printf("%s %#v\n", resp, err)
+		}
+
+		message.Publish(submission, result)
+	}
+}
+
+func exec(parent opentracing.Span, uid, in, out string) (string, error) {
+	span := opentracing.StartSpan(
+		"exec",
+		opentracing.ChildOf(parent.Context()),
+	)
+	defer span.Finish()
+
+	span.LogFields(
+		otlog.String("input", in),
+	)
+
 	ctx := context.Background()
 	resp, err := dock.ContainerExecCreate(
 		ctx, uid,
@@ -259,23 +303,7 @@ func handle(msg amqp.Delivery) {
 		return
 	}
 
-	probio, err := noobdb.IOProblem(submission.ProblemID)
-	inputs := strings.Split(probio.In, "---")
-	outputs := strings.Split(probio.Out, "---")
-
-	for i, in := range inputs {
-		resp, err := test(cid, sanitize(in)+"\n", sanitize(outputs[i]))
-
-		var result model.SubmissionResult
-		result.Stage = strconv.Itoa(i + 1)
-		result.Status = "PASSED"
-		if resp != "" || err != nil {
-			result.Status = "FAILED"
-			log.Printf("%s %#v\n", resp, err)
-		}
-
-		message.Publish(submission.ID, result)
-	}
+	test(span, cid, submission.ProblemID, submission.ID)
 
 	err = clean(span, submission.ID)
 	if err != nil {
