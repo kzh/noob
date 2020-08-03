@@ -3,7 +3,7 @@ services:
   auth:
     build:
       context: .
-      dockerfile: ./auth/Dockerfile
+      dockerfile: ./cmd/auth/Dockerfile
     container_name: uhkevin/noob-auth
     image: uhkevin/noob-auth
     ports:
@@ -11,7 +11,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: ./frontend/Dockerfile
+      dockerfile: ./cmd/frontend/Dockerfile
     container_name: uhkevin/noob-frontend
     image: uhkevin/noob-frontend
     ports:
@@ -19,7 +19,7 @@ services:
   problems:
     build:
       context: .
-      dockerfile: ./problems/Dockerfile
+      dockerfile: ./cmd/problems/Dockerfile
     container_name: uhkevin/noob-problems
     image: uhkevin/noob-problems
     ports:
@@ -27,7 +27,7 @@ services:
   submissions:
     build:
       context: .
-      dockerfile: ./submissions/Dockerfile
+      dockerfile: ./cmd/submissions/Dockerfile
     container_name: uhkevin/noob-submissions
     image: uhkevin/noob-submissions
     ports:
@@ -35,6 +35,6 @@ services:
   executor:
     build:
       context: .
-      dockerfile: ./executor/Dockerfile
+      dockerfile: ./cmd/executor/Dockerfile
     container_name: uhkevin/noob-executor
     image: uhkevin/noob-executor
