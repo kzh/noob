@@ -16,11 +16,13 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
+	"github.com/opentracing/opentracing-go"
 	"github.com/streadway/amqp"
 
 	noobdb "github.com/kzh/noob/pkg/database"
 	"github.com/kzh/noob/pkg/message"
 	"github.com/kzh/noob/pkg/model"
+	"github.com/kzh/noob/pkg/tracing"
 )
 
 var dock *client.Client
@@ -55,6 +57,9 @@ func buildImageContext(code string) (io.Reader, error) {
 }
 
 func buildImage(id string, buildContext io.Reader) error {
+	span := opentracing.StartSpan("buildImage")
+	defer span.Finish()
+
 	ctx := context.Background()
 	res, err := dock.ImageBuild(
 		ctx,
@@ -253,7 +258,12 @@ func handle(msg amqp.Delivery) {
 func main() {
 	log.Println("Noob: Executor Worker is starting...")
 
-	var err error
+	closer, err := tracing.InitJaeger()
+	if err != nil {
+		panic(err)
+	}
+	defer closer.Close()
+
 	dock, err = client.NewEnvClient()
 	if err != nil {
 		panic(err)
