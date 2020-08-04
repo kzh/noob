@@ -11,6 +11,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -148,19 +149,31 @@ func test(parent opentracing.Span, container, problem, submission string) {
 	inputs := strings.Split(probio.In, "---")
 	outputs := strings.Split(probio.Out, "---")
 
-	for i, in := range inputs {
-		resp, err := exec(span, container, sanitize(in)+"\n", sanitize(outputs[i]))
+	var wg sync.WaitGroup
 
-		var result model.SubmissionResult
-		result.Stage = strconv.Itoa(i + 1)
-		result.Status = "PASSED"
-		if resp != "" || err != nil {
-			result.Status = "FAILED"
-			log.Printf("%s %#v\n", resp, err)
-		}
+	for i, input := range inputs {
+		wg.Add(1)
 
-		message.Publish(submission, result)
+		i := i
+		in, out := sanitize(input)+"\n", sanitize(outputs[i])
+		go func() {
+			defer wg.Done()
+
+			resp, err := exec(span, container, in, out)
+
+			var result model.SubmissionResult
+			result.Stage = strconv.Itoa(i + 1)
+			result.Status = "PASSED"
+			if resp != "" || err != nil {
+				result.Status = "FAILED"
+				log.Printf("%s %#v\n", resp, err)
+			}
+
+			message.Publish(submission, result)
+		}()
 	}
+
+	wg.Wait()
 }
 
 func exec(parent opentracing.Span, uid, in, out string) (string, error) {
