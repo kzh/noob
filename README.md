@@ -3,6 +3,8 @@ A scalable distributed microservice architecture platform running on Kubernetes 
 <h3 align="center"><a href="https://www.youtube.com/watch?v=5R3UGIH7fm8">WIP Demo Video</a></h3>
 
 <img src="https://raw.githubusercontent.com/kzh/noob/8e83d650de4d94855582c615944ef166819081f9/images/Noob%20Architecture.svg?sanitize=true">
+<img width="2304" alt="Screen Shot 2020-10-08 at 4 51 09 AM" src="https://user-images.githubusercontent.com/3507526/95436539-efff7880-0921-11eb-8930-f53963f4e374.png">
+
 
 #### Roadmap
 - Set up Kubernetes Cluster.
